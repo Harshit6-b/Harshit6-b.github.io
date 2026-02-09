@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harshit Bhalani — Arcade Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #1b1b1b;
+            --orange: #ff6f00;
+            --teal: #00ffcc;
+            --screen-glow: rgba(0, 255, 204, 0.15);
+            --crt-green: #33ff33;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--teal);
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* CRT Screen Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                transparent 1px,
+                transparent 2px,
+                rgba(0, 0, 0, 0.15) 3px
+            );
+            pointer-events: none;
+            z-index: 9999;
+            animation: flicker 0.15s infinite;
+        }
+
+        /* Scanline animation */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%,
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.97; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Pixel Art Header */
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border: 4px solid var(--orange);
+            background: rgba(27, 27, 27, 0.9);
+            margin-bottom: 3rem;
+            box-shadow: 0 0 20px var(--screen-glow),
+                        inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.5rem;
+            color: var(--orange);
+            text-shadow: 
+                3px 3px 0 var(--teal),
+                6px 6px 0 rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+            letter-spacing: 4px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 
+                    3px 3px 0 var(--teal),
+                    6px 6px 0 rgba(0, 0, 0, 0.5),
+                    0 0 10px var(--orange);
+            }
+            to {
+                text-shadow: 
+                    3px 3px 0 var(--teal),
+                    6px 6px 0 rgba(0, 0, 0, 0.5),
+                    0 0 30px var(--orange),
+                    0 0 40px var(--orange);
+            }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--teal);
+            margin-bottom: 2rem;
+        }
+
+        .blink {
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: var(--orange);
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border: 3px solid var(--orange);
+            background: var(--bg-dark);
+            position: relative;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        nav a:hover {
+            background: var(--orange);
+            color: var(--bg-dark);
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 var(--teal);
+        }
+
+        nav a::before {
+            content: '▶';
+            position: absolute;
+            left: -20px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover::before {
+            opacity: 1;
+            left: 10px;
+        }
+
+        /* Section Headers */
+        h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.8rem;
+            color: var(--teal);
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--orange);
+            animation: underline-slide 1.5s ease-in-out infinite;
+        }
+
+        @keyframes underline-slide {
+            0%, 100% { width: 100%; }
+            50% { width: 50%; }
+        }
+
+        /* Level Cards (Projects) */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .level-card {
+            border: 3px solid var(--teal);
+            padding: 1.5rem;
+            background: rgba(0, 255, 204, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .level-card a {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--orange);
+            color: var(--bg-dark);
+            text-decoration: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            border: 2px solid var(--orange);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .level-card a:hover {
+            background: transparent;
+            color: var(--orange);
+            transform: translateX(5px);
+        }
+
+        .level-card a:active {
+            transform: translateX(3px);
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border: 3px solid var(--orange);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .level-card:hover {
+            transform: scale(1.05);
+            background: rgba(0, 255, 204, 0.1);
+        }
+
+        .level-card:hover::before {
+            opacity: 1;
+        }
+
+        .level-number {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            color: var(--orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .level-title {
+            font-size: 1.5rem;
+            color: var(--teal);
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--orange);
+            color: var(--bg-dark);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .score {
+            font-size: 1.3rem;
+            color: var(--crt-green);
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .score::before {
+            content: 'SCORE: ';
+            color: var(--teal);
+        }
+
+        /* High Scores (Blog) */
+        .high-scores {
+            margin-bottom: 4rem;
+        }
+
+        .score-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 2px dotted var(--teal);
+            transition: all 0.3s ease;
+        }
+
+        .score-entry:hover {
+            background: rgba(255, 111, 0, 0.1);
+            padding-left: 2rem;
+        }
+
+        .score-entry .rank {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--orange);
+            font-size: 1.2rem;
+            min-width: 60px;
+        }
+
+        .score-entry .achievement {
+            flex: 1;
+            font-size: 1.3rem;
+            color: var(--teal);
+        }
+
+        .score-entry .points {
+            font-family: 'Press Start 2P', cursive;
+            color: var(--crt-green);
+            font-size: 1rem;
+        }
+
+        /* Contact Section */
+        .contact-box {
+            border: 4px solid var(--orange);
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255, 111, 0, 0.05);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .contact-box::before,
+        .contact-box::after {
+            content: '◆';
+            position: absolute;
+            font-size: 2rem;
+            color: var(--teal);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .contact-box::before {
+            top: 10px;
+            left: 10px;
+        }
+
+        .contact-box::after {
+            bottom: 10px;
+            right: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .insert-coin {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: var(--orange);
+            margin-bottom: 1.5rem;
+            animation: blink 1s step-start infinite;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-links a {
+            font-size: 1.2rem;
+            color: var(--teal);
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--teal);
+            transition: all 0.3s ease;
+        }
+
+        .contact-links a:hover {
+            background: var(--teal);
+            color: var(--bg-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 3px solid var(--teal);
+            margin-top: 4rem;
+            color: rgba(0, 255, 204, 0.6);
+        }
+
+        .pixel-art-decoration {
+            display: inline-block;
+            margin: 0 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Roadmap Toggle Button */
+        .roadmap-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--orange);
+            border: 4px solid var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 111, 0, 0.5);
+        }
+
+        .roadmap-toggle:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(255, 111, 0, 0.8);
+        }
+
+        .roadmap-icon {
+            font-size: 2rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Roadmap Modal */
+        .roadmap-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .roadmap-modal.active {
+            display: flex;
+        }
+
+        .roadmap-content {
+            background: var(--bg-dark);
+            border: 4px solid var(--orange);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 0 50px var(--screen-glow);
+        }
+
+        .roadmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--teal);
+        }
+
+        .roadmap-close {
+            background: var(--orange);
+            border: 2px solid var(--orange);
+            color: var(--bg-dark);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .roadmap-close:hover {
+            background: transparent;
+            color: var(--orange);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--teal);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '●';
+            position: absolute;
+            left: -0.7rem;
+            color: var(--orange);
+            font-size: 1.5rem;
+            background: var(--bg-dark);
+            z-index: 1;
+        }
+
+        .timeline-item.future::before {
+            content: '○';
+            color: var(--teal);
+        }
+
+        .timeline-date {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+            color: var(--teal);
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+
+        .timeline-desc {
+            color: rgba(0, 255, 204, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .timeline-item.future .timeline-title {
+            color: rgba(0, 255, 204, 0.6);
+        }
+
+        .timeline-item.future .timeline-desc {
+            color: rgba(0, 255, 204, 0.5);
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .roadmap-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .roadmap-icon {
+                font-size: 1.5rem;
+            }
+
+            .roadmap-content {
+                padding: 1.5rem;
+            }
+
+            .timeline {
+                padding-left: 1.5rem;
+            }
+
+            .timeline-item {
+                padding-left: 1.5rem;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            .levels-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav a {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HARSHIT BHALANI</h1>
+            <p class="tagline">Electronics Engineer × Embedded Systems × FPGA Design<br>Level up through hardware, code, and robotics.</p>
+            <p style="font-family: 'Press Start 2P', cursive; font-size: 0.8rem; color: var(--orange); margin-top: 1rem;">
+                PRESS START <span class="blink">▌</span>
+            </p>
+        </header>
+
+        <nav id="arcade">
+            <a href="#arcade">🎮 ARCADE</a>
+            <a href="#levels">🕹️ LEVELS</a>
+            <a href="#blog">📝 BLOG</a>
+            <a href="#scores">🏆 ACHIEVEMENTS</a>
+            <a href="#contact">📧 CONTACT INFO</a>
+        </nav>
+
+        <section id="levels" class="levels-section">
+            <h2>⚡ LEVELS — PROJECTS</h2>
+            <div class="levels-grid">
+                <div class="level-card">
+                    <div class="level-number">LEVEL 01</div>
+                    <div class="level-title">FPGA Video Pipeline</div>
+                    <p style="margin-top: 1rem; color: rgba(0, 255, 204, 0.8);">
+                        Complete VGA graphics system in Verilog on Xilinx Artix-7. Built interactive Tetris with pixel-level control at 640×480 @ 60Hz. RTL simulation and hardware validation.
+                    </p>
+                    <a href="https://github.com/Harshit6-b/SRA-FPGA-based-tetris" target="_blank" rel="noopener noreferrer">VIEW PROJECT →</a>
+                </div>
+
+                <div class="level-card">
+                    <div class="level-number">LEVEL 02</div>
+                    <div class="level-title">Anti-Drone System</div>
+                    <p style="margin-top: 1rem; color: rgba(0, 255, 204, 0.8);">
+                        UAV detection using RF sensing and SDR. Built GPS spoofing testbed for navigation security research. Smart India Hackathon 2025 Finalist.
+                    </p>
+                    <a href="https://github.com/Harshit6-b/anti_drone" target="_blank" rel="noopener noreferrer">VIEW PROJECT →</a>
+                </div>
+
+                <div class="level-card">
+                    <div class="level-number">LEVEL 03</div>
+                    <div class="level-title">Maze-Solving Robot</div>
+                    <p style="margin-top: 1rem; color: rgba(0, 255, 204, 0.8);">
+                        ESP32-based autonomous navigation with IR sensors and encoders. Real-time motor control and rule-based pathfinding algorithms.
+                    </p>
+                </div>
+
+                <div class="level-card">
+                    <div class="level-number">LEVEL 04</div>
+                    <div class="level-title">More Levels Loading...</div>
+                    <p style="margin-top: 1rem; color: rgba(0, 255, 204, 0.8);">
+                        Next adventure in embedded systems, FPGA design, or robotics. Stay tuned for the next challenge!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tech" style="margin-bottom: 4rem;">
+            <h2>⚙️ TECH STACK — POWER-UPS</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div style="border: 2px solid var(--orange); padding: 1.5rem; background: rgba(255, 111, 0, 0.05);">
+                    <div style="font-family: 'Press Start 2P', cursive; color: var(--orange); font-size: 0.8rem; margin-bottom: 1rem;">HARDWARE</div>
+                    <div style="color: var(--teal); font-size: 1.1rem;">
+                        Digital Logic Design • RTL • FPGA • Microcontrollers • Sensors • Embedded Systems
+                    </div>
+                </div>
+                <div style="border: 2px solid var(--teal); padding: 1.5rem; background: rgba(0, 255, 204, 0.05);">
+                    <div style="font-family: 'Press Start 2P', cursive; color: var(--teal); font-size: 0.8rem; margin-bottom: 1rem;">LANGUAGES</div>
+                    <div style="color: var(--teal); font-size: 1.1rem;">
+                        Verilog • SystemVerilog • C • C++ • Python
+                    </div>
+                </div>
+                <div style="border: 2px solid var(--crt-green); padding: 1.5rem; background: rgba(51, 255, 51, 0.05);">
+                    <div style="font-family: 'Press Start 2P', cursive; color: var(--crt-green); font-size: 0.8rem; margin-bottom: 1rem;">TOOLS</div>
+                    <div style="color: var(--teal); font-size: 1.1rem;">
+                        Vivado • GNU Radio • ROS 2 • AutoCAD • Git
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" style="margin-bottom: 4rem;">
+            <h2>📝 BLOG — CHRONICLES</h2>
+            <div class="levels-grid">
+                <div class="level-card" style="grid-column: 1 / -1; text-align: center;">
+                    <div style="font-family: 'Press Start 2P', cursive; color: var(--orange); font-size: 1rem; margin-bottom: 1rem;">COMING SOON</div>
+                    <div class="level-title">First Post Loading...</div>
+                    <p style="margin-top: 1rem; color: rgba(0, 255, 204, 0.8);">
+                        Technical deep-dives, project breakdowns, and embedded systems adventures. Watch this space!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="scores" class="high-scores">
+            <h2>🏆 HIGH SCORES — ACHIEVEMENTS</h2>
+            <div class="score-entry">
+                <span class="rank">#01</span>
+                <span class="achievement">Smart India Hackathon 2025 — Grand Finale</span>
+                <span class="points">FINALIST</span>
+            </div>
+            <div class="score-entry">
+                <span class="rank">#02</span>
+                <span class="achievement">CGPA Excellence — VJTI Mumbai</span>
+                <span class="points">9.02 / 10</span>
+            </div>
+            <div class="score-entry">
+                <span class="rank">#03</span>
+                <span class="achievement">Workshop Conductor — C Programming & Robotics</span>
+                <span class="points">200+ students</span>
+            </div>
+            <div class="score-entry">
+                <span class="rank">#04</span>
+                <span class="achievement">Core Member — Society of Robotics & Automation</span>
+                <span class="points">VJTI</span>
+            </div>
+            <div class="score-entry">
+                <span class="rank">#05</span>
+                <span class="achievement">Minor in Data Science — Expected 2028</span>
+                <span class="points">IN PROGRESS</span>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>📧 CONTACT INFO</h2>
+            <div class="contact-box">
+                <p class="insert-coin">LET'S CONNECT</p>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--teal);">
+                    Open for collaborations, internships, and hardware projects
+                </p>
+                <div class="contact-links">
+                    <a href="/cdn-cgi/l/email-protection#650d0417160d0c11070d0409040b0c53250208040c094b060a08">📧 EMAIL</a>
+                    <a href="https://github.com/Harshit6-b" target="_blank">🐙 GITHUB</a>
+                    <a href="https://www.linkedin.com/in/harshit-vinod-bhalani-597640323" target="_blank">💼 LINKEDIN</a>
+                    <a href="tel:+918369474932">📱 PHONE</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>
+                <span class="pixel-art-decoration">◆</span>
+                GAME OVER? NEVER.
+                <span class="pixel-art-decoration">◆</span>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                Built with ♥ and pixels © 2026
+            </p>
+        </footer>
+    </div>
+
+    <!-- Roadmap Toggle Button -->
+    <div class="roadmap-toggle" id="roadmapToggle">
+        <div class="roadmap-icon">📍</div>
+    </div>
+
+    <!-- Roadmap Modal -->
+    <div class="roadmap-modal" id="roadmapModal">
+        <div class="roadmap-content">
+            <div class="roadmap-header">
+                <h3 style="font-family: 'Press Start 2P', cursive; color: var(--orange); font-size: 1.2rem; margin-bottom: 0.5rem;">⚡ JOURNEY MAP</h3>
+                <button class="roadmap-close" id="roadmapClose">✕</button>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">SEP 2024</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🎓 Started B.Tech at VJTI</div>
+                        <div class="timeline-desc">Electronics and Telecommunication Engineering with Minor in Data Science</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">JUL 2025</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🤖 Joined SRA VJTI</div>
+                        <div class="timeline-desc">Core SY Member - Society of Robotics & Automation</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">JUL - SEP 2025</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🎮 FPGA Video Pipeline</div>
+                        <div class="timeline-desc">Built complete VGA graphics system and Tetris game in Verilog</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">SEP 2025</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🏆 SIH 2025 Finalist</div>
+                        <div class="timeline-desc">Smart India Hackathon - Selected for Grand Finale</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">OCT 2025</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🚗 Maze-Solving Robot</div>
+                        <div class="timeline-desc">ESP32-based autonomous navigation system</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">NOV - DEC 2025</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🛸 Anti-Drone System</div>
+                        <div class="timeline-desc">UAV detection using RF sensing and SDR for SIH 2025</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-date">JUL 2025 - PRESENT</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">👥 Workshop Conductor</div>
+                        <div class="timeline-desc">Trained 200+ students on C Programming and Self-Balancing Robots</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item future">
+                    <div class="timeline-date">2026 & BEYOND</div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">🚀 Next Level...</div>
+                        <div class="timeline-desc">More projects, blogs, and embedded systems adventures ahead!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add random flicker to CRT effect
+        setInterval(() => {
+            document.body.style.opacity = Math.random() > 0.95 ? '0.98' : '1';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 50);
+        }, 3000);
+
+        // Konami code easter egg
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.key);
+            konamiCode = konamiCode.slice(-10);
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                document.body.style.filter = 'hue-rotate(180deg) saturate(2)';
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                }, 3000);
+            }
+        });
+
+        // Roadmap modal functionality
+        const roadmapToggle = document.getElementById('roadmapToggle');
+        const roadmapModal = document.getElementById('roadmapModal');
+        const roadmapClose = document.getElementById('roadmapClose');
+
+        roadmapToggle.addEventListener('click', () => {
+            roadmapModal.classList.add('active');
+        });
+
+        roadmapClose.addEventListener('click', () => {
+            roadmapModal.classList.remove('active');
+        });
+
+        roadmapModal.addEventListener('click', (e) => {
+            if (e.target === roadmapModal) {
+                roadmapModal.classList.remove('active');
+            }
+        });
+
+        // Close roadmap on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && roadmapModal.classList.contains('active')) {
+                roadmapModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
