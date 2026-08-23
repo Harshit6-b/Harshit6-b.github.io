@@ -1,36 +1,334 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4edda" />
-    <meta
-      name="description"
-      content="Harshit Bhalani — systems, verification, and hardware-software edge cases."
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harshit Bhalani / Field Notes</title>
+    
+    <!-- Design System Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&family=DM+Serif+Display:ital@0;1&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <script>
-      // Pairs with public/404.html: if we arrived here via the GitHub Pages
-      // fallback, swap the placeholder URL for the real one before the app
-      // (and its router) ever renders, so it starts on the right page.
-      (function () {
-        var params = new URLSearchParams(window.location.search);
-        var redirectPath = params.get("redirect");
-        if (redirectPath) {
-          window.history.replaceState(null, "", "/" + redirectPath);
+    <style>
+        :root {
+            --paper: #f7f4ed;
+            --paper-deep: #f0ebd8;
+            --ink: #1b3b2b;
+            --ink-soft: #587064;
+            --burgundy: #7a2e2d;
+            --ochre: #c28e38;
+            --rule: #d9ceb5;
+            --display: 'DM Serif Display', serif;
+            --hand: 'Caveat', cursive;
+            --mono: 'DM Mono', monospace;
         }
-      })();
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; background: var(--paper); }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- POSTER GRAIN OVERLAY --- */
+        .grain-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.1;
+            background-image: radial-gradient(var(--ink) 0.7px, transparent 0.7px);
+            background-size: 7px 7px;
+            mix-blend-mode: multiply;
+        }
+
+        /* --- VERTICAL GUTTER TEXT --- */
+        .gutter {
+            position: fixed;
+            top: 50%;
+            font: 10px var(--mono);
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--ink-soft);
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .gutter-left { left: 20px; transform: translateY(-50%) rotate(-90deg); transform-origin: left center; }
+        .gutter-right { right: 20px; transform: translateY(-50%) rotate(90deg); transform-origin: right center; }
+
+        /* --- LAYOUT ARCHITECTURE --- */
+        .site-header, .site-footer, .lab-page {
+            width: min(760px, calc(100% - 40px));
+            margin: auto;
+        }
+
+        .site-shell {
+            min-height: 100vh;
+            background-image: repeating-linear-gradient(90deg, transparent 0 180px, rgba(27, 59, 43, 0.025) 181px 182px);
+        }
+
+        .site-header {
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--ink);
+        }
+
+        .wordmark { font: 600 13px var(--mono); text-decoration: none; color: var(--ink); letter-spacing: 0.03em; }
+        .wordmark:before { content: "№ "; color: var(--burgundy); }
+
+        .main-nav { display: flex; gap: 18px; font: 11px var(--mono); }
+        .main-nav a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid transparent; cursor: pointer; }
+        .main-nav a:hover, .main-nav a.active { color: var(--burgundy); border-color: var(--burgundy); }
+
+        /* --- PAGES (ROUTING) --- */
+        .view-container { min-height: 80vh; }
+        .lab-page { display: none; padding: 64px 0 110px; animation: fadeIn 0.4s ease; }
+        .lab-page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .lab-kicker { font: 11px var(--mono); color: var(--burgundy); margin: 0 0 32px; text-transform: lowercase; }
+
+        /* --- INTRO BLOCK --- */
+        .intro-block { font: 23px/1.58 var(--hand); max-width: 660px; margin-bottom: 40px; }
+        .intro-block p { margin: 0 0 18px; }
+        .intro-block strong { font-weight: 700; color: var(--burgundy); }
+
+        /* --- LOG SECTIONS & 118px GRID --- */
+        .log-section { border-top: 1px solid var(--ink); margin-top: 62px; padding-top: 18px; }
+        .log-section h2 { font: 400 30px var(--display); margin: 0 0 5px; }
+        .section-note { font: 12px var(--mono); color: var(--ink-soft); margin: 0 0 21px; }
+
+        .quest-list { list-style: none; border-top: 1px solid var(--rule); }
+        .quest-list li { padding: 13px 0; border-bottom: 1px solid var(--rule); font: 15px/1.5 var(--mono); }
+        .quest-list span { display: inline-block; color: var(--burgundy); width: 35px; }
+
+        .writing-list { border-top: 1px solid var(--rule); }
+        .writing-row {
+            display: grid;
+            grid-template-columns: 118px 1fr 18px;
+            gap: 20px;
+            align-items: start;
+            padding: 17px 0;
+            border-bottom: 1px solid var(--rule);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+        .writing-row:hover { padding-left: 10px; background: rgba(240, 235, 216, 0.72); }
+        .writing-type { font: 10px/1.55 var(--mono); color: var(--burgundy); text-transform: lowercase; }
+        .writing-row strong { font: 400 23px var(--display); display: block; line-height: 1.1; }
+        .writing-row small { display: block; color: var(--ink-soft); font-size: 13px; line-height: 1.5; margin-top: 4px; }
+        .writing-row .arrow { color: var(--burgundy); font-weight: bold; }
+
+        .quiet-link { display: inline-flex; align-items: center; gap: 5px; color: var(--burgundy); font: 11px var(--mono); margin-top: 19px; cursor: pointer; }
+
+        /* --- SPLIT SECTIONS --- */
+        .split-section { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+        .inline-links { display: flex; gap: 14px; font: 13px var(--mono); margin-top: 10px; }
+        .inline-links a { color: var(--burgundy); text-decoration: underline; text-underline-offset: 4px; }
+        .hobby-copy { font: 17px/1.6 var(--hand); margin: 0; }
+        .signature { font: 32px var(--hand); color: var(--burgundy); text-align: right; margin: 48px 0 0; transform: rotate(-7deg); }
+
+        /* --- INNER PAGES --- */
+        .page-heading { border-bottom: 1px solid var(--ink); padding-bottom: 34px; margin-bottom: 37px; }
+        .page-heading h1 { font: 400 clamp(48px, 9vw, 78px) / 0.95 var(--display); margin: 0 0 17px; text-transform: lowercase; }
+        .page-heading p { font: 18px/1.6 var(--hand); max-width: 580px; margin: 0; }
+
+        .simple-record { border: 1px solid var(--ink); padding: 24px; background: rgba(240, 235, 216, 0.5); }
+        .simple-record p { font: 22px/1.55 var(--hand); margin: 24px 0; color: var(--ink); }
+
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0; }
+        .tag { border: 1px solid var(--ink); color: var(--ink); padding: 7px 9px; font: 10px var(--mono); background: var(--paper); }
+        
+        .button { display: inline-block; background: var(--burgundy); color: var(--paper); border: 1px solid var(--burgundy); padding: 11px 14px; font: 11px var(--mono); text-transform: uppercase; text-decoration: none; }
+        .button:hover { background: var(--ink); border-color: var(--ink); }
+
+        /* --- FOOTER --- */
+        .site-footer { border-top: 1px solid var(--ink); padding: 20px 0 32px; display: flex; justify-content: space-between; font: 10px var(--mono); color: var(--ink-soft); }
+
+        @media (max-width: 700px) {
+            .gutter { display: none; }
+            .site-header { width: calc(100% - 32px); }
+            .lab-page { width: calc(100% - 32px); }
+            .writing-row { grid-template-columns: 80px 1fr 15px; }
+            .split-section { grid-template-columns: 1fr; gap: 32px; }
+            .main-nav { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grain-overlay"></div>
+    <div class="gutter gutter-left">Hardware Architecture — Silicon Verification — RTL Design</div>
+    <div class="gutter gutter-right">VJTI Mumbai — CADSL IIT Bombay — Class of 2028</div>
+
+    <div class="site-shell">
+        <header class="site-header">
+            <a onclick="navigate('/')" class="wordmark">harshit bhalani</a>
+            <nav class="main-nav">
+                <a onclick="navigate('/')" id="nav-lab">lab</a>
+                <a onclick="navigate('/projects')" id="nav-projects">projects</a>
+                <a onclick="navigate('/experience')" id="nav-experience">experience</a>
+                <a onclick="navigate('/research')" id="nav-research">research</a>
+                <a onclick="navigate('/skills')" id="nav-skills">skills</a>
+                <a onclick="navigate('/contact')" id="nav-contact">contact</a>
+            </nav>
+        </header>
+
+        <div class="view-container">
+            <!-- PAGE: HOME (LAB) -->
+            <main id="view-lab" class="lab-page active">
+                <p class="lab-kicker">lab log · august 2026</p>
+                <section class="intro-block">
+                    <p>I am <strong>Harshit Bhalani</strong>.</p>
+                    <p>I architect hardware from the logic up. My work centers on designing custom instruction pipelines, managing complex execution hazards, and verifying silicon performance.</p>
+                    <p>From building multi-stage RISC CPUs in RTL to developing full UVM testbenches, I focus on the structural foundations of computing.</p>
+                </section>
+
+                <section class="log-section">
+                    <h2>Current quests</h2>
+                    <p class="section-note">What am I actively working through?</p>
+                    <ul class="quest-list">
+                        <li><span>01</span> Pipeline efficiency and complex execution hazards</li>
+                        <li><span>02</span> Instruction set architecture and custom RISC CPUs</li>
+                        <li><span>03</span> UVM verification methodologies for pipelined processors</li>
+                        <li><span>04</span> RTL design, FPGA systems, and hardware-software co-design</li>
+                    </ul>
+                </section>
+
+                <section class="log-section">
+                    <h2>Latest writing</h2>
+                    <p class="section-note">Short records from the workbench.</p>
+                    <div class="writing-list" id="home-projects"></div>
+                    <a onclick="navigate('/projects')" class="quiet-link">see all project logs →</a>
+                </section>
+
+                <section class="log-section split-section">
+                    <div>
+                        <h2>Contact</h2>
+                        <p class="section-note">Places where I might be alive enough to respond.</p>
+                        <div class="inline-links">
+                            <a href="mailto:harshitbhalani6@gmail.com">email</a>
+                            <a href="https://github.com/Harshit6-b" target="_blank">github</a>
+                            <a href="https://linkedin.com/..." target="_blank">linkedin</a>
+                        </div>
+                    </div>
+                    <div>
+                        <h2>Hobbies</h2>
+                        <p class="section-note">What keeps me away from waveforms?</p>
+                        <p class="hobby-copy">Anime, novels, and movies — especially stories with systems worth getting lost in.</p>
+                    </div>
+                </section>
+                <p class="signature">— HB</p>
+            </main>
+
+            <!-- PAGE: PROJECTS -->
+            <main id="view-projects" class="lab-page">
+                <p class="lab-kicker">archive / selected work</p>
+                <div class="page-heading">
+                    <h1>Project logs</h1>
+                    <p>The work, in short records.</p>
+                </div>
+                <div class="writing-list" id="archive-projects"></div>
+            </main>
+
+            <!-- PAGE: GENERIC (Experience, Research, Skills, Contact) -->
+            <main id="view-generic" class="lab-page">
+                <p class="lab-kicker" id="gen-kicker"></p>
+                <div class="page-heading">
+                    <h1 id="gen-title"></h1>
+                    <p id="gen-intro"></p>
+                </div>
+                <div class="simple-record" id="gen-content"></div>
+            </main>
+        </div>
+
+        <footer class="site-footer">
+            <span>© 2026 / Mumbai, India</span>
+            <span>field notes / version 04</span>
+            <a href="mailto:harshitbhalani6@gmail.com">email ↗</a>
+        </footer>
+    </div>
+
+    <script>
+        const projects = [
+            { id: "qubes-firewall", type: "open source", title: "The Firewall Race", date: "2026", short: "A readiness signal fired before initialization finished." },
+            { id: "synapse32", type: "hardware verification", title: "Synapse32 UVM", date: "2025—26", short: "Directed tests passed. The pipeline still had other ideas." },
+            { id: "fpga-tetris", type: "hardware design", title: "FPGA Tetris", date: "2025", short: "A whole game rendered by timing counters and logic." },
+            { id: "anti-drone", type: "research / embedded", title: "Anti-Drone System", date: "2025", short: "RF sensing and signal analysis." }
+        ];
+
+        const pages = {
+            experience: {
+                title: "Experience", kicker: "field work", 
+                intro: "At CADSL, IIT Bombay, I designed IITB-RISC-26, a 6-stage pipelined RISC CPU in RTL.",
+                content: `<ul class="quest-list"><li><span>01</span> CADSL / IIT Bombay — RTL Design Intern</li><li><span>+</span> Future roles to be added here.</li></ul>`
+            },
+            research: {
+                title: "Research", kicker: "architecture", 
+                intro: "Pipeline efficiency, ISA, and verification methodologies.",
+                content: `<ul class="quest-list"><li><span>01</span> Pipeline efficiency</li><li><span>02</span> ISA Architecture</li><li><span>03</span> Verification Methods</li></ul>`
+            },
+            skills: {
+                title: "Skills", kicker: "training", 
+                intro: "Core capabilities in hardware and systems.",
+                content: `<div class="tag-row">${["Digital logic", "RTL", "Verilog", "SystemVerilog", "C++", "Python", "Vivado", "UVM", "Git"].map(s => `<span class="tag">${s}</span>`).join('')}</div>`
+            },
+            contact: {
+                title: "Contact", kicker: "correspondence", 
+                intro: "Looking for opportunities in processor architecture.",
+                content: `<a href="mailto:harshitbhalani6@gmail.com" class="button">Email Harshit ↗</a>`
+            }
+        };
+
+        function navigate(path) {
+            window.location.hash = path;
+            const views = document.querySelectorAll('.lab-page');
+            const navs = document.querySelectorAll('.main-nav a');
+            views.forEach(v => v.classList.remove('active'));
+            navs.forEach(n => n.classList.remove('active'));
+
+            if (path === '/' || path === '') {
+                document.getElementById('view-lab').classList.add('active');
+                document.getElementById('nav-lab').classList.add('active');
+            } else if (path === '/projects') {
+                document.getElementById('view-projects').classList.add('active');
+                document.getElementById('nav-projects').classList.add('active');
+            } else {
+                const key = path.replace('/', '');
+                if (pages[key]) {
+                    const data = pages[key];
+                    document.getElementById('gen-title').innerText = data.title;
+                    document.getElementById('gen-kicker').innerText = data.kicker;
+                    document.getElementById('gen-intro').innerText = data.intro;
+                    document.getElementById('gen-content').innerHTML = data.content;
+                    document.getElementById('view-generic').classList.add('active');
+                    document.getElementById('nav-' + key).classList.add('active');
+                }
+            }
+            window.scrollTo(0,0);
+        }
+
+        const projectRow = p => `
+            <div class="writing-row">
+                <span class="writing-type">${p.type}<br/>${p.date}</span>
+                <span><strong>${p.title}</strong><small>${p.short}</small></span>
+                <span class="arrow">↗</span>
+            </div>`;
+
+        document.getElementById('home-projects').innerHTML = projects.slice(0, 4).map(projectRow).join('');
+        document.getElementById('archive-projects').innerHTML = projects.map(projectRow).join('');
+
+        window.onhashchange = () => navigate(window.location.hash.replace('#', ''));
+        navigate(window.location.hash.replace('#', ''));
     </script>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+</body>
 </html>
