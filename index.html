@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harshit Bhalani / Field Notes</title>
-    
-    <!-- Design System Fonts -->
+    <meta name="description" content="Harshit Bhalani — hardware architecture, RTL design and silicon verification. VJTI Mumbai, class of 2028.">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; background: var(--paper); }
+        html { scroll-behavior: smooth; background: var(--paper); scroll-padding-top: 96px; }
 
         body {
             background: var(--paper);
@@ -79,29 +79,30 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--ink);
+            position: sticky;
+            top: 0;
+            background: var(--paper);
+            z-index: 15;
         }
 
         .wordmark { font: 600 13px var(--mono); text-decoration: none; color: var(--ink); letter-spacing: 0.03em; }
         .wordmark:before { content: "№ "; color: var(--burgundy); }
 
         .main-nav { display: flex; gap: 18px; font: 11px var(--mono); }
-        .main-nav a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid transparent; cursor: pointer; }
+        .main-nav a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid transparent; }
         .main-nav a:hover, .main-nav a.active { color: var(--burgundy); border-color: var(--burgundy); }
 
-        /* --- PAGES (ROUTING) --- */
-        .view-container { min-height: 80vh; }
-        .lab-page { display: none; padding: 64px 0 110px; animation: fadeIn 0.4s ease; }
-        .lab-page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
+        .lab-page { padding: 64px 0 110px; }
         .lab-kicker { font: 11px var(--mono); color: var(--burgundy); margin: 0 0 32px; text-transform: lowercase; }
 
         /* --- INTRO BLOCK --- */
         .intro-block { font: 23px/1.58 var(--hand); max-width: 660px; margin-bottom: 40px; }
         .intro-block p { margin: 0 0 18px; }
         .intro-block strong { font-weight: 700; color: var(--burgundy); }
+        .intro-meta { font: 12px/1.7 var(--mono); color: var(--ink-soft); margin-top: 26px; }
+        .intro-meta span { color: var(--burgundy); }
 
-        /* --- LOG SECTIONS & 118px GRID --- */
+        /* --- LOG SECTIONS --- */
         .log-section { border-top: 1px solid var(--ink); margin-top: 62px; padding-top: 18px; }
         .log-section h2 { font: 400 30px var(--display); margin: 0 0 5px; }
         .section-note { font: 12px var(--mono); color: var(--ink-soft); margin: 0 0 21px; }
@@ -110,57 +111,45 @@
         .quest-list li { padding: 13px 0; border-bottom: 1px solid var(--rule); font: 15px/1.5 var(--mono); }
         .quest-list span { display: inline-block; color: var(--burgundy); width: 35px; }
 
+        /* --- RECORD ROWS (118px grid) --- */
         .writing-list { border-top: 1px solid var(--rule); }
         .writing-row {
             display: grid;
-            grid-template-columns: 118px 1fr 18px;
+            grid-template-columns: 118px 1fr;
             gap: 20px;
             align-items: start;
-            padding: 17px 0;
+            padding: 20px 0;
             border-bottom: 1px solid var(--rule);
-            text-decoration: none;
-            color: inherit;
             transition: all 0.2s ease;
         }
         .writing-row:hover { padding-left: 10px; background: rgba(240, 235, 216, 0.72); }
         .writing-type { font: 10px/1.55 var(--mono); color: var(--burgundy); text-transform: lowercase; }
-        .writing-row strong { font: 400 23px var(--display); display: block; line-height: 1.1; }
-        .writing-row small { display: block; color: var(--ink-soft); font-size: 13px; line-height: 1.5; margin-top: 4px; }
-        .writing-row .arrow { color: var(--burgundy); font-weight: bold; }
-
-        .quiet-link { display: inline-flex; align-items: center; gap: 5px; color: var(--burgundy); font: 11px var(--mono); margin-top: 19px; cursor: pointer; }
+        .writing-row strong { font: 400 23px var(--display); display: block; line-height: 1.15; }
+        .writing-row small { display: block; color: var(--ink-soft); font-size: 13px; line-height: 1.55; margin-top: 6px; }
+        .writing-row ul { list-style: none; margin-top: 10px; }
+        .writing-row ul li { font-size: 14px; line-height: 1.6; padding-left: 16px; position: relative; margin-bottom: 6px; }
+        .writing-row ul li:before { content: "—"; position: absolute; left: 0; color: var(--burgundy); }
+        .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+        .stack span { border: 1px solid var(--rule); color: var(--ink-soft); padding: 4px 7px; font: 10px var(--mono); }
 
         /* --- SPLIT SECTIONS --- */
-        .split-section { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-        .inline-links { display: flex; gap: 14px; font: 13px var(--mono); margin-top: 10px; }
+        .inline-links { display: flex; flex-wrap: wrap; gap: 14px; font: 13px var(--mono); margin-top: 10px; }
         .inline-links a { color: var(--burgundy); text-decoration: underline; text-underline-offset: 4px; }
-        .hobby-copy { font: 17px/1.6 var(--hand); margin: 0; }
         .signature { font: 32px var(--hand); color: var(--burgundy); text-align: right; margin: 48px 0 0; transform: rotate(-7deg); }
 
-        /* --- INNER PAGES --- */
-        .page-heading { border-bottom: 1px solid var(--ink); padding-bottom: 34px; margin-bottom: 37px; }
-        .page-heading h1 { font: 400 clamp(48px, 9vw, 78px) / 0.95 var(--display); margin: 0 0 17px; text-transform: lowercase; }
-        .page-heading p { font: 18px/1.6 var(--hand); max-width: 580px; margin: 0; }
-
-        .simple-record { border: 1px solid var(--ink); padding: 24px; background: rgba(240, 235, 216, 0.5); }
-        .simple-record p { font: 22px/1.55 var(--hand); margin: 24px 0; color: var(--ink); }
-
-        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0; }
-        .tag { border: 1px solid var(--ink); color: var(--ink); padding: 7px 9px; font: 10px var(--mono); background: var(--paper); }
-        
-        .button { display: inline-block; background: var(--burgundy); color: var(--paper); border: 1px solid var(--burgundy); padding: 11px 14px; font: 11px var(--mono); text-transform: uppercase; text-decoration: none; }
+        .button { display: inline-block; background: var(--burgundy); color: var(--paper); border: 1px solid var(--burgundy); padding: 11px 14px; font: 11px var(--mono); text-transform: uppercase; text-decoration: none; margin-top: 22px; }
         .button:hover { background: var(--ink); border-color: var(--ink); }
 
         /* --- FOOTER --- */
-        .site-footer { border-top: 1px solid var(--ink); padding: 20px 0 32px; display: flex; justify-content: space-between; font: 10px var(--mono); color: var(--ink-soft); }
+        .site-footer { border-top: 1px solid var(--ink); padding: 20px 0 32px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font: 10px var(--mono); color: var(--ink-soft); }
+        .site-footer a { color: var(--burgundy); text-decoration: none; }
 
         @media (max-width: 700px) {
             .gutter { display: none; }
-            .site-header { width: calc(100% - 32px); }
-            .lab-page { width: calc(100% - 32px); }
-            .writing-row { grid-template-columns: 80px 1fr 15px; }
-            .split-section { grid-template-columns: 1fr; gap: 32px; }
-            .main-nav { gap: 10px; }
+            .site-header { width: calc(100% - 32px); height: auto; padding: 12px 0; flex-direction: column; gap: 8px; align-items: flex-start; }
+            .lab-page, .site-footer { width: calc(100% - 32px); }
+            .writing-row { grid-template-columns: 1fr; gap: 6px; }
+            .main-nav { gap: 12px; }
         }
     </style>
 </head>
@@ -172,163 +161,152 @@
 
     <div class="site-shell">
         <header class="site-header">
-            <a onclick="navigate('/')" class="wordmark">harshit bhalani</a>
+            <a href="#intro" class="wordmark">harshit bhalani</a>
             <nav class="main-nav">
-                <a onclick="navigate('/')" id="nav-lab">lab</a>
-                <a onclick="navigate('/projects')" id="nav-projects">projects</a>
-                <a onclick="navigate('/experience')" id="nav-experience">experience</a>
-                <a onclick="navigate('/research')" id="nav-research">research</a>
-                <a onclick="navigate('/skills')" id="nav-skills">skills</a>
-                <a onclick="navigate('/contact')" id="nav-contact">contact</a>
+                <a href="#intro">intro</a>
+                <a href="#experience">experience</a>
+                <a href="#projects">projects</a>
+                <a href="#contact">contact</a>
             </nav>
         </header>
 
-        <div class="view-container">
-            <!-- PAGE: HOME (LAB) -->
-            <main id="view-lab" class="lab-page active">
-                <p class="lab-kicker">lab log · august 2026</p>
-                <section class="intro-block">
+        <main class="lab-page">
+            <!-- INTRO -->
+            <section id="intro">
+                <p class="lab-kicker">lab log · september 2026</p>
+                <div class="intro-block">
                     <p>I am <strong>Harshit Bhalani</strong>.</p>
-                    <p>I architect hardware from the logic up. My work centers on designing custom instruction pipelines, managing complex execution hazards, and verifying silicon performance.</p>
-                    <p>From building multi-stage RISC CPUs in RTL to developing full UVM testbenches, I focus on the structural foundations of computing.</p>
-                </section>
-
-                <section class="log-section">
-                    <h2>Current quests</h2>
-                    <p class="section-note">What am I actively working through?</p>
-                    <ul class="quest-list">
-                        <li><span>01</span> Pipeline efficiency and complex execution hazards</li>
-                        <li><span>02</span> Instruction set architecture and custom RISC CPUs</li>
-                        <li><span>03</span> UVM verification methodologies for pipelined processors</li>
-                        <li><span>04</span> RTL design, FPGA systems, and hardware-software co-design</li>
-                    </ul>
-                </section>
-
-                <section class="log-section">
-                    <h2>Latest writing</h2>
-                    <p class="section-note">Short records from the workbench.</p>
-                    <div class="writing-list" id="home-projects"></div>
-                    <a onclick="navigate('/projects')" class="quiet-link">see all project logs →</a>
-                </section>
-
-                <section class="log-section split-section">
-                    <div>
-                        <h2>Contact</h2>
-                        <p class="section-note">Places where I might be alive enough to respond.</p>
-                        <div class="inline-links">
-                            <a href="mailto:harshitbhalani6@gmail.com">email</a>
-                            <a href="https://github.com/Harshit6-b" target="_blank">github</a>
-                            <a href="https://linkedin.com/..." target="_blank">linkedin</a>
-                        </div>
-                    </div>
-                    <div>
-                        <h2>Hobbies</h2>
-                        <p class="section-note">What keeps me away from waveforms?</p>
-                        <p class="hobby-copy">Anime, novels, and movies — especially stories with systems worth getting lost in.</p>
-                    </div>
-                </section>
-                <p class="signature">— HB</p>
-            </main>
-
-            <!-- PAGE: PROJECTS -->
-            <main id="view-projects" class="lab-page">
-                <p class="lab-kicker">archive / selected work</p>
-                <div class="page-heading">
-                    <h1>Project logs</h1>
-                    <p>The work, in short records.</p>
                 </div>
-                <div class="writing-list" id="archive-projects"></div>
-            </main>
+                <p class="intro-meta">
+                    <span>education</span> — B.Tech, Electronics &amp; Telecommunication (Minor in Data Science), VJTI Mumbai · 2024–2028 · CGPA 8.47/10<br>
+                    <span>working in</span> — Verilog, SystemVerilog, UVM, C/C++, Python, Vivado, Git<br>
+                    <span>away from waveforms</span> — anime, novels, and movies with systems worth getting lost in
+                </p>
+            </section>
 
-            <!-- PAGE: GENERIC (Experience, Research, Skills, Contact) -->
-            <main id="view-generic" class="lab-page">
-                <p class="lab-kicker" id="gen-kicker"></p>
-                <div class="page-heading">
-                    <h1 id="gen-title"></h1>
-                    <p id="gen-intro"></p>
+            <!-- EXPERIENCE -->
+            <section id="experience" class="log-section">
+                <h2>Experience</h2>
+                <p class="section-note">Where the work happened — roles and contributions.</p>
+                <div class="writing-list">
+                    <div class="writing-row">
+                        <span class="writing-type">research intern<br/>jun — jul 2026</span>
+                        <span>
+                            <strong>CADSL, IIT Bombay</strong>
+                            <small>Computer Architecture and Dependable Systems Lab — Mumbai, India</small>
+                            <ul>
+                                <li>Designed IITB-RISC-26, a custom 6-stage pipelined RISC CPU in RTL, with hazard forwarding/stalling and branch-flush logic distributed across the pipeline.</li>
+                                <li>Built a directed verification suite covering data hazards, load-use stalls, branch flushes, and multi-cycle memory operations across instruction sequences.</li>
+                            </ul>
+                            <div class="stack"><span>Verilog</span><span>RTL</span><span>Pipelining</span><span>Verification</span></div>
+                        </span>
+                    </div>
+                    <div class="writing-row">
+                        <span class="writing-type">open source<br/>2026</span>
+                        <span>
+                            <strong>Qubes OS — The Firewall Race</strong>
+                            <small>Contribution: a readiness signal fired before initialization finished.</small>
+                            <ul>
+                                <li>Traced and reported a start-up race in the Qubes OS firewall path, where the readiness signal arrived ahead of the rules being fully in place.</li>
+                            </ul>
+                            <div class="stack"><span>Linux</span><span>Python</span><span>Debugging</span></div>
+                        </span>
+                    </div>
+                    <div class="writing-row">
+                        <span class="writing-type">core member<br/>jul 2025 — present</span>
+                        <span>
+                            <strong>Society of Robotics &amp; Automation, VJTI</strong>
+                            <small>Third-year core team — Mumbai, India</small>
+                            <ul>
+                                <li>Ran hands-on workshops for 200+ students, from C programming to self-balancing robots and OpenCV-based computer vision.</li>
+                            </ul>
+                        </span>
+                    </div>
                 </div>
-                <div class="simple-record" id="gen-content"></div>
-            </main>
-        </div>
+            </section>
+
+            <!-- PROJECTS -->
+            <section id="projects" class="log-section">
+                <h2>Projects</h2>
+                <p class="section-note">Short records from the workbench.</p>
+                <div class="writing-list">
+                    <div class="writing-row">
+                        <span class="writing-type">hardware verification<br/>jan — mar 2026</span>
+                        <span>
+                            <strong>Synapse32 — UVM Verification</strong>
+                            <small>Directed tests passed. The pipeline still had other ideas.</small>
+                            <ul>
+                                <li>UVM testbench in SystemVerilog for the Synapse32 RV32I pipelined processor: driver, monitor, sequencer, and scoreboard wired through a clocking-block virtual interface.</li>
+                                <li>The scoreboard's RV32I reference model runs directed tests across ALU ops and branch/pipeline-flush behavior, with coverage now pushing into CSR operations and interrupt handling.</li>
+                            </ul>
+                            <div class="stack"><span>SystemVerilog</span><span>UVM</span><span>RV32I</span><span>Functional coverage</span></div>
+                        </span>
+                    </div>
+                    <div class="writing-row">
+                        <span class="writing-type">hardware design<br/>jul — sep 2025</span>
+                        <span>
+                            <strong>FPGA Video Pipeline &amp; Graphics System</strong>
+                            <small>A whole game rendered by timing counters and logic.</small>
+                            <ul>
+                                <li>VGA graphics pipeline in Verilog on a Xilinx Artix-7 (Arty A7-35T), generating standard 640×480 @ 60 Hz timing from scratch.</li>
+                                <li>Drove a fully playable Tetris on it — clean and artifact-free in both simulation and on-hardware testing.</li>
+                            </ul>
+                            <div class="stack"><span>Verilog</span><span>Artix-7</span><span>Vivado</span><span>VGA timing</span></div>
+                        </span>
+                    </div>
+                    <div class="writing-row">
+                        <span class="writing-type">research / embedded<br/>dec 2025</span>
+                        <span>
+                            <strong>Anti-Drone System — SIH 2025 Finalist</strong>
+                            <small>RF sensing and signal analysis, for an ITBP problem statement.</small>
+                            <ul>
+                                <li>Reached the Grand Finale of Smart India Hackathon 2025 on an Indo-Tibetan Border Police anti-drone problem statement.</li>
+                                <li>Used a Software-Defined Radio to capture and record RF signals, contributing to the acquisition and analysis pipeline for drone detection.</li>
+                                <li>Built a proof-of-concept GPS spoofing demonstration over ESP-NOW in a controlled experimental setup.</li>
+                            </ul>
+                            <div class="stack"><span>SDR</span><span>GNU Radio</span><span>ESP-NOW</span><span>Python</span></div>
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONTACT -->
+            <section id="contact" class="log-section">
+                <div>
+                    <h2>Contact</h2>
+                    <p class="section-note">Places where I might be alive enough to respond.</p>
+                    <div class="inline-links">
+                        <a href="mailto:harshitbhalani6@gmail.com">email</a>
+                        <a href="https://github.com/Harshit6-b" target="_blank" rel="noopener">github</a>
+                        <a href="https://linkedin.com/in/harshit-bhalani" target="_blank" rel="noopener">linkedin</a>
+                    </div>
+                    <a href="mailto:harshitbhalani6@gmail.com" class="button">Email Harshit ↗</a>
+                </div>
+            </section>
+
+            <p class="signature">— HB</p>
+        </main>
 
         <footer class="site-footer">
             <span>© 2026 / Mumbai, India</span>
-            <span>field notes / version 04</span>
+            <span>field notes / version 05</span>
             <a href="mailto:harshitbhalani6@gmail.com">email ↗</a>
         </footer>
     </div>
 
     <script>
-        const projects = [
-            { id: "qubes-firewall", type: "open source", title: "The Firewall Race", date: "2026", short: "A readiness signal fired before initialization finished." },
-            { id: "synapse32", type: "hardware verification", title: "Synapse32 UVM", date: "2025—26", short: "Directed tests passed. The pipeline still had other ideas." },
-            { id: "fpga-tetris", type: "hardware design", title: "FPGA Tetris", date: "2025", short: "A whole game rendered by timing counters and logic." },
-            { id: "anti-drone", type: "research / embedded", title: "Anti-Drone System", date: "2025", short: "RF sensing and signal analysis." }
-        ];
+        // Highlight the nav entry for the section currently in view.
+        const links = [...document.querySelectorAll('.main-nav a')];
+        const sections = links.map(a => document.querySelector(a.getAttribute('href')));
 
-        const pages = {
-            experience: {
-                title: "Experience", kicker: "field work", 
-                intro: "At CADSL, IIT Bombay, I designed IITB-RISC-26, a 6-stage pipelined RISC CPU in RTL.",
-                content: `<ul class="quest-list"><li><span>01</span> CADSL / IIT Bombay — RTL Design Intern</li><li><span>+</span> Future roles to be added here.</li></ul>`
-            },
-            research: {
-                title: "Research", kicker: "architecture", 
-                intro: "Pipeline efficiency, ISA, and verification methodologies.",
-                content: `<ul class="quest-list"><li><span>01</span> Pipeline efficiency</li><li><span>02</span> ISA Architecture</li><li><span>03</span> Verification Methods</li></ul>`
-            },
-            skills: {
-                title: "Skills", kicker: "training", 
-                intro: "Core capabilities in hardware and systems.",
-                content: `<div class="tag-row">${["Digital logic", "RTL", "Verilog", "SystemVerilog", "C++", "Python", "Vivado", "UVM", "Git"].map(s => `<span class="tag">${s}</span>`).join('')}</div>`
-            },
-            contact: {
-                title: "Contact", kicker: "correspondence", 
-                intro: "Looking for opportunities in processor architecture.",
-                content: `<a href="mailto:harshitbhalani6@gmail.com" class="button">Email Harshit ↗</a>`
-            }
-        };
+        const spy = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+            });
+        }, { rootMargin: '-45% 0px -50% 0px' });
 
-        function navigate(path) {
-            window.location.hash = path;
-            const views = document.querySelectorAll('.lab-page');
-            const navs = document.querySelectorAll('.main-nav a');
-            views.forEach(v => v.classList.remove('active'));
-            navs.forEach(n => n.classList.remove('active'));
-
-            if (path === '/' || path === '') {
-                document.getElementById('view-lab').classList.add('active');
-                document.getElementById('nav-lab').classList.add('active');
-            } else if (path === '/projects') {
-                document.getElementById('view-projects').classList.add('active');
-                document.getElementById('nav-projects').classList.add('active');
-            } else {
-                const key = path.replace('/', '');
-                if (pages[key]) {
-                    const data = pages[key];
-                    document.getElementById('gen-title').innerText = data.title;
-                    document.getElementById('gen-kicker').innerText = data.kicker;
-                    document.getElementById('gen-intro').innerText = data.intro;
-                    document.getElementById('gen-content').innerHTML = data.content;
-                    document.getElementById('view-generic').classList.add('active');
-                    document.getElementById('nav-' + key).classList.add('active');
-                }
-            }
-            window.scrollTo(0,0);
-        }
-
-        const projectRow = p => `
-            <div class="writing-row">
-                <span class="writing-type">${p.type}<br/>${p.date}</span>
-                <span><strong>${p.title}</strong><small>${p.short}</small></span>
-                <span class="arrow">↗</span>
-            </div>`;
-
-        document.getElementById('home-projects').innerHTML = projects.slice(0, 4).map(projectRow).join('');
-        document.getElementById('archive-projects').innerHTML = projects.map(projectRow).join('');
-
-        window.onhashchange = () => navigate(window.location.hash.replace('#', ''));
-        navigate(window.location.hash.replace('#', ''));
+        sections.forEach(s => s && spy.observe(s));
     </script>
 </body>
 </html>
