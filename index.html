@@ -2,311 +2,1177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harshit Bhalani / Field Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Harshit Bhalani — Harshit 95</title>
     <meta name="description" content="Harshit Bhalani — hardware architecture, RTL design and silicon verification. VJTI Mumbai, class of 2028.">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="preload" href="fonts/ms_sans_serif.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/ms_sans_serif_bold.woff2" as="font" type="font/woff2" crossorigin>
 
     <style>
+        /* Pixel copy of the Win95 system font, from 98.css (MIT, github.com/jdan/98.css) */
+        @font-face {
+            font-family: "Pixel MS Sans Serif";
+            src: url("fonts/ms_sans_serif.woff2") format("woff2");
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: "Pixel MS Sans Serif";
+            src: url("fonts/ms_sans_serif_bold.woff2") format("woff2");
+            font-weight: 700;
+            font-display: swap;
+        }
+
         :root {
-            --paper: #f7f4ed;
-            --paper-deep: #f0ebd8;
-            --ink: #1b3b2b;
-            --ink-soft: #587064;
-            --burgundy: #7a2e2d;
-            --ochre: #c28e38;
-            --rule: #d9ceb5;
-            --display: 'DM Serif Display', serif;
-            --hand: 'Caveat', cursive;
-            --mono: 'DM Mono', monospace;
+            --desktop: #008080;
+            --face: #c0c0c0;
+            --light: #dfdfdf;
+            --white: #ffffff;
+            --shadow: #808080;
+            --dark: #0a0a0a;
+            --navy: #000080;
+            --title-a: #000080;
+            --title-b: #1084d0;
+            --pixel: "Pixel MS Sans Serif", Tahoma, "MS Sans Serif", "Microsoft Sans Serif", Geneva, Verdana, sans-serif;
+            --taskbar-h: 30px;
+            /* Taskbar plus the iPhone home-indicator area, if any */
+            --taskbar-total: calc(var(--taskbar-h) + env(safe-area-inset-bottom, 0px));
+
+            /* Classic Win95 bevels */
+            --raised: inset -1px -1px var(--dark), inset 1px 1px var(--white), inset -2px -2px var(--shadow), inset 2px 2px var(--light);
+            --sunken: inset -1px -1px var(--white), inset 1px 1px var(--shadow), inset -2px -2px var(--light), inset 2px 2px var(--dark);
+            --field:  inset -1px -1px var(--white), inset 1px 1px var(--shadow), inset -2px -2px var(--light), inset 2px 2px var(--dark);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; background: var(--paper); scroll-padding-top: 96px; }
+        html, body { height: 100%; }
 
         body {
-            background: var(--paper);
-            color: var(--ink);
-            font-family: 'DM Sans', sans-serif;
-            line-height: 1.6;
-            overflow-x: hidden;
+            background: var(--desktop);
+            color: #000;
+            font: 11px/1.45 var(--pixel);
+            overflow: hidden;
+            -webkit-font-smoothing: none;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior: none;
+            user-select: none;
         }
 
-        /* --- POSTER GRAIN OVERLAY --- */
-        .grain-overlay {
+        button { font: inherit; color: inherit; }
+        button, a { touch-action: manipulation; }
+        a { color: var(--navy); }
+
+        /* ---------- No-JS fallback: show content as plain pages ---------- */
+        html:not(.js) body { overflow: auto; background: var(--face); padding: 16px; user-select: text; }
+        html:not(.js) .page { display: block; max-width: 720px; margin: 0 auto 24px; background: var(--white); padding: 16px; box-shadow: var(--sunken); }
+        html.js .page { display: none; }
+        .window .page { display: block !important; }
+
+        /* ---------- Desktop ---------- */
+        .desktop {
             position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 20;
-            opacity: 0.1;
-            background-image: radial-gradient(var(--ink) 0.7px, transparent 0.7px);
-            background-size: 7px 7px;
-            mix-blend-mode: multiply;
+            inset: 0 0 var(--taskbar-total) 0;
+            overflow: hidden;
         }
 
-        /* --- VERTICAL GUTTER TEXT --- */
-        .gutter {
-            position: fixed;
-            top: 50%;
-            font: 10px var(--mono);
-            text-transform: uppercase;
-            letter-spacing: 0.25em;
-            color: var(--ink-soft);
+        .icons {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(auto-fill, 84px);
+            grid-auto-columns: 84px;
+            gap: 4px;
+            padding: 8px max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left));
+            height: 100%;
+            align-content: start;
+        }
+
+        .desk-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 2px;
+            background: none;
+            border: 0;
+            color: var(--white);
+            cursor: default;
+            outline: none;
+            text-align: center;
+            -webkit-touch-callout: none;
+        }
+        .desk-icon svg { width: 32px; height: 32px; flex: none; }
+        .desk-icon .label {
+            padding: 1px 3px;
             white-space: nowrap;
-            z-index: 10;
-            pointer-events: none;
+            text-align: left; /* width is evened out in JS so the text lands on whole pixels */
+            line-height: 1.25;
+            border: 1px dotted transparent;
         }
-        .gutter-left { left: 20px; transform: translateY(-50%) rotate(-90deg); transform-origin: left center; }
-        .gutter-right { right: 20px; transform: translateY(-50%) rotate(90deg); transform-origin: right center; }
+        .desk-icon.selected svg { filter: brightness(0.55) sepia(1) hue-rotate(190deg) saturate(4); }
+        .desk-icon.selected .label { background: var(--navy); border-color: #ffff80; }
+        .desk-icon:focus-visible .label { border-color: #ffff80; }
 
-        /* --- LAYOUT ARCHITECTURE --- */
-        .site-header, .site-footer, .lab-page {
-            width: min(760px, calc(100% - 40px));
-            margin: auto;
+        /* ---------- Windows ---------- */
+        .window {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            background: var(--face);
+            box-shadow: var(--raised);
+            padding: 3px;
+            min-width: 240px;
+            min-height: 140px;
+            resize: both;
+            overflow: hidden;
+        }
+        .window.minimized { display: none; }
+        .window.maximized {
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            resize: none;
         }
 
-        .site-shell {
-            min-height: 100vh;
-            background-image: repeating-linear-gradient(90deg, transparent 0 180px, rgba(27, 59, 43, 0.025) 181px 182px);
-        }
-
-        .site-header {
-            height: 76px;
+        .title-bar {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--ink);
-            position: sticky;
-            top: 0;
-            background: var(--paper);
-            z-index: 15;
+            gap: 4px;
+            height: 20px;
+            padding: 0 2px 0 3px;
+            background: linear-gradient(90deg, #808080, #b5b5b5);
+            color: #c0c0c0;
+            font-weight: bold;
+            flex: none;
+            touch-action: none;
         }
+        .window.active .title-bar { background: linear-gradient(90deg, var(--title-a), var(--title-b)); color: var(--white); }
+        .title-bar svg { width: 16px; height: 16px; flex: none; }
+        .title-text { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .wordmark { font: 600 13px var(--mono); text-decoration: none; color: var(--ink); letter-spacing: 0.03em; }
-        .wordmark:before { content: "№ "; color: var(--burgundy); }
-
-        .main-nav { display: flex; gap: 18px; font: 11px var(--mono); }
-        .main-nav a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid transparent; }
-        .main-nav a:hover, .main-nav a.active { color: var(--burgundy); border-color: var(--burgundy); }
-
-        .lab-page { padding: 64px 0 110px; }
-        .lab-kicker { font: 11px var(--mono); color: var(--burgundy); margin: 0 0 32px; text-transform: lowercase; }
-
-        /* --- INTRO BLOCK --- */
-        .intro-block { font: 23px/1.58 var(--hand); max-width: 660px; margin-bottom: 40px; }
-        .intro-block p { margin: 0 0 18px; }
-        .intro-block strong { font-weight: 700; color: var(--burgundy); }
-        .intro-meta { font: 12px/1.7 var(--mono); color: var(--ink-soft); margin-top: 26px; }
-        .intro-meta span { color: var(--burgundy); }
-
-        /* --- LOG SECTIONS --- */
-        .log-section { border-top: 1px solid var(--ink); margin-top: 62px; padding-top: 18px; }
-        .log-section h2 { font: 400 30px var(--display); margin: 0 0 5px; }
-        .section-note { font: 12px var(--mono); color: var(--ink-soft); margin: 0 0 21px; }
-
-        .quest-list { list-style: none; border-top: 1px solid var(--rule); }
-        .quest-list li { padding: 13px 0; border-bottom: 1px solid var(--rule); font: 15px/1.5 var(--mono); }
-        .quest-list span { display: inline-block; color: var(--burgundy); width: 35px; }
-
-        /* --- RECORD ROWS (118px grid) --- */
-        .writing-list { border-top: 1px solid var(--rule); }
-        .writing-row {
+        .title-controls { display: flex; gap: 2px; }
+        .title-controls button {
+            width: 16px;
+            height: 14px;
+            background: var(--face);
+            border: 0;
+            box-shadow: var(--raised);
             display: grid;
-            grid-template-columns: 118px 1fr;
-            gap: 20px;
-            align-items: start;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--rule);
-            transition: all 0.2s ease;
+            place-items: center;
+            padding: 0;
         }
-        .writing-row:hover { padding-left: 10px; background: rgba(240, 235, 216, 0.72); }
-        .writing-type { font: 10px/1.55 var(--mono); color: var(--burgundy); text-transform: lowercase; }
-        .writing-row strong { font: 400 23px var(--display); display: block; line-height: 1.15; }
-        .writing-row small { display: block; color: var(--ink-soft); font-size: 13px; line-height: 1.55; margin-top: 6px; }
-        .writing-row ul { list-style: none; margin-top: 10px; }
-        .writing-row ul li { font-size: 14px; line-height: 1.6; padding-left: 16px; position: relative; margin-bottom: 6px; }
-        .writing-row ul li:before { content: "—"; position: absolute; left: 0; color: var(--burgundy); }
-        .stack { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-        .stack span { border: 1px solid var(--rule); color: var(--ink-soft); padding: 4px 7px; font: 10px var(--mono); }
+        .title-controls button:last-child { margin-left: 2px; }
+        .title-controls button:active { box-shadow: var(--sunken); }
+        .title-controls svg { width: 8px; height: 7px; }
 
-        /* --- SPLIT SECTIONS --- */
-        .inline-links { display: flex; flex-wrap: wrap; gap: 14px; font: 13px var(--mono); margin-top: 10px; }
-        .inline-links a { color: var(--burgundy); text-decoration: underline; text-underline-offset: 4px; }
-        .signature { font: 32px var(--hand); color: var(--burgundy); text-align: right; margin: 48px 0 0; transform: rotate(-7deg); }
+        .menu-bar { display: flex; gap: 2px; padding: 2px 0; flex: none; }
+        .menu-bar span { padding: 1px 6px; }
+        .menu-bar span:hover { box-shadow: inset -1px -1px var(--shadow), inset 1px 1px var(--white); }
 
-        .button { display: inline-block; background: var(--burgundy); color: var(--paper); border: 1px solid var(--burgundy); padding: 11px 14px; font: 11px var(--mono); text-transform: uppercase; text-decoration: none; margin-top: 22px; }
-        .button:hover { background: var(--ink); border-color: var(--ink); }
+        .win-body {
+            flex: 1;
+            overflow: auto;
+            background: var(--white);
+            box-shadow: var(--field);
+            padding: 14px 16px;
+            user-select: text;
+            font: 11px/1.6 var(--pixel);
+            overscroll-behavior: contain;
+        }
 
-        /* --- FOOTER --- */
-        .site-footer { border-top: 1px solid var(--ink); padding: 20px 0 32px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font: 10px var(--mono); color: var(--ink-soft); }
-        .site-footer a { color: var(--burgundy); text-decoration: none; }
+        .status-bar { display: flex; gap: 2px; margin-top: 2px; flex: none; }
+        .status-bar div { flex: 1; padding: 2px 4px; box-shadow: inset -1px -1px var(--white), inset 1px 1px var(--shadow); }
+        .status-bar div:last-child { flex: 0 0 120px; }
 
-        @media (max-width: 700px) {
-            .gutter { display: none; }
-            .site-header { width: calc(100% - 32px); height: auto; padding: 12px 0; flex-direction: column; gap: 8px; align-items: flex-start; }
-            .lab-page, .site-footer { width: calc(100% - 32px); }
-            .writing-row { grid-template-columns: 1fr; gap: 6px; }
-            .main-nav { gap: 12px; }
+        /* ---------- Page content ---------- */
+        .page h1 { font: bold 22px/1.2 var(--pixel); margin-bottom: 10px; }
+        .page h2 { font: bold 11px/1.6 var(--pixel); margin-bottom: 2px; }
+        .page .sub { color: #444; margin-bottom: 10px; }
+        .page p { margin-bottom: 10px; }
+
+        .props { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; margin-top: 12px; }
+        .props dt { font: bold 11px/1.9 var(--pixel); }
+
+        .about-head { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+        .about-head svg { width: 48px; height: 48px; flex: none; }
+
+        fieldset {
+            border: 0;
+            box-shadow: inset -1px -1px var(--white), inset 1px 1px var(--shadow), inset -2px -2px var(--shadow), inset 2px 2px var(--white);
+            padding: 12px 12px 10px;
+            margin: 0 0 16px;
+        }
+        legend { padding: 0 4px; background: var(--white); font: bold 11px var(--pixel); color: var(--navy); }
+        fieldset ul { margin: 8px 0 0 18px; }
+        fieldset li { margin-bottom: 5px; }
+
+        .stack { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+        .stack span { background: var(--face); box-shadow: var(--raised); padding: 2px 7px; font: 11px var(--pixel); }
+
+        .btn {
+            display: inline-block;
+            font: 11px var(--pixel);
+            min-width: 84px;
+            padding: 5px 12px;
+            background: var(--face);
+            box-shadow: var(--raised);
+            border: 0;
+            color: #000;
+            text-align: center;
+            text-decoration: none;
+            cursor: default;
+        }
+        .btn:active { box-shadow: var(--sunken); }
+        .btn:focus-visible { outline: 1px dotted #000; outline-offset: -5px; }
+        .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+        .contact-head { display: flex; gap: 14px; align-items: flex-start; }
+        .contact-head svg { width: 32px; height: 32px; flex: none; }
+        .file-row { display: flex; align-items: center; gap: 8px; }
+        .file-row svg { width: 16px; height: 16px; }
+
+        /* Text shown only on computers / only on phones */
+        .phone-only { display: none; }
+
+        /* Win95 yellow tooltip that points at a window's close button */
+        .balloon {
+            position: absolute;
+            top: 44px;
+            right: 4px;
+            max-width: 230px;
+            padding: 6px 9px;
+            background: #ffffe1;
+            border: 1px solid #000;
+            font-size: 13px;
+            line-height: 1.4;
+            z-index: 5;
+        }
+        .balloon::before, .balloon::after {
+            content: "";
+            position: absolute;
+            right: 8px; /* arrow centred on the ✕ button */
+            border: 7px solid transparent;
+            border-top: 0;
+        }
+        .balloon::before { top: -8px; border-bottom: 8px solid #000; }
+        .balloon::after { top: -7px; border-bottom: 8px solid #ffffe1; }
+
+        /* ---------- Taskbar ---------- */
+        .taskbar {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            height: var(--taskbar-total);
+            background: var(--face);
+            box-shadow: inset 0 1px var(--light), inset 0 2px var(--white);
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 4px max(2px, env(safe-area-inset-right)) env(safe-area-inset-bottom, 0px) max(2px, env(safe-area-inset-left));
+            z-index: 10000;
+        }
+
+        .start-btn, .task-btn {
+            height: 23px;
+            background: var(--face);
+            border: 0;
+            box-shadow: var(--raised);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0 5px;
+            cursor: default;
+        }
+        .start-btn { font-weight: bold; flex: none; }
+        .start-btn svg { width: 18px; height: 16px; }
+        .start-btn.pressed { box-shadow: var(--sunken); }
+
+        .tasks { flex: 1; display: flex; gap: 3px; overflow: hidden; min-width: 0; }
+        .task-btn { flex: 0 1 160px; min-width: 0; }
+        .task-btn svg { width: 16px; height: 16px; flex: none; }
+        .task-btn span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .task-btn.active {
+            box-shadow: var(--sunken);
+            font-weight: bold;
+            background-image: repeating-conic-gradient(var(--white) 0 25%, var(--face) 0 50%);
+            background-size: 2px 2px;
+        }
+
+        .tray {
+            flex: none;
+            height: 23px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: inset -1px -1px var(--white), inset 1px 1px var(--shadow);
+        }
+
+        /* ---------- Start menu ---------- */
+        .start-menu {
+            position: fixed;
+            bottom: calc(var(--taskbar-total) - 2px);
+            left: max(2px, env(safe-area-inset-left));
+            display: none;
+            background: var(--face);
+            box-shadow: var(--raised);
+            padding: 3px;
+            z-index: 10001;
+            min-width: 210px;
+        }
+        .start-menu.open { display: flex; }
+
+        .start-side {
+            width: 24px;
+            background: linear-gradient(0deg, var(--navy), var(--title-b));
+            color: var(--white);
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 17px;
+            padding: 8px 0;
+            letter-spacing: 0.02em;
+        }
+        .start-side b { font-weight: 900; }
+        .start-side span { color: var(--face); }
+
+        .start-items { flex: 1; list-style: none; }
+        .start-items a, .start-items button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 5px 20px 5px 6px;
+            background: none;
+            border: 0;
+            color: #000;
+            text-decoration: none;
+            text-align: left;
+            cursor: default;
+        }
+        .start-items svg { width: 32px; height: 32px; flex: none; }
+        .start-items a:hover, .start-items button:hover,
+        .start-items a:focus-visible, .start-items button:focus-visible { background: var(--navy); color: var(--white); outline: none; }
+        .start-items .sep { height: 2px; margin: 3px 2px; box-shadow: inset 0 1px var(--shadow), inset 0 -1px var(--white); }
+
+        /* ---------- Shut Down Windows dialog ---------- */
+        .dither {
+            position: fixed;
+            inset: 0;
+            z-index: 15000;
+            display: none;
+            place-items: center;
+            padding: 12px;
+            /* Win95 greyed the screen with a 50% checkerboard behind this dialog */
+            background-image: repeating-conic-gradient(rgba(0, 0, 0, 0.6) 0 25%, transparent 0 50%);
+            background-size: 2px 2px;
+        }
+        .dither.on { display: grid; }
+        .window.dialog { position: relative; resize: none; width: min(360px, 100%); min-height: 0; }
+        .dialog-body { display: flex; gap: 14px; padding: 14px 12px 6px; }
+        .dialog-body svg { width: 32px; height: 32px; flex: none; }
+        .dialog-body label { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+        .dialog-btns { display: flex; justify-content: center; gap: 8px; padding: 10px 0 8px; }
+
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            margin: 0;
+            border-radius: 50%;
+            background: var(--white);
+            box-shadow: inset -1px -1px var(--white), inset 1px 1px var(--shadow), inset -2px -2px var(--light), inset 2px 2px var(--dark);
+            flex: none;
+        }
+        input[type="radio"]:checked { background: radial-gradient(#000 0 2px, var(--white) 2.5px); }
+        input[type="radio"]:focus-visible + span { outline: 1px dotted #000; }
+
+        /* ---------- Shut down / boot screens ---------- */
+        .screen { position: fixed; inset: 0; z-index: 20000; display: none; }
+        .screen.on { display: block; }
+
+        .splash {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 24px;
+            text-align: center;
+            background:
+                radial-gradient(ellipse 22% 9% at 22% 24%, rgba(255, 255, 255, 0.9), transparent 70%),
+                radial-gradient(ellipse 18% 7% at 76% 16%, rgba(255, 255, 255, 0.85), transparent 70%),
+                radial-gradient(ellipse 26% 10% at 72% 78%, rgba(255, 255, 255, 0.8), transparent 70%),
+                radial-gradient(ellipse 20% 8% at 20% 84%, rgba(255, 255, 255, 0.8), transparent 70%),
+                linear-gradient(#2f6fd0, #7fb8f0 65%, #b8dafa);
+        }
+        .splash-logo { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .splash-logo svg { width: 72px; height: 64px; }
+        .splash-name { font: bold 44px/1 var(--pixel); color: var(--white); text-shadow: 2px 2px 0 var(--navy); }
+        .splash-name span { color: var(--navy); text-shadow: 2px 2px 0 var(--white); margin-left: 8px; }
+        .splash-msg { font: bold 22px/1.3 var(--pixel); color: var(--navy); min-height: 1.3em; }
+        .splash-bar {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 10px;
+            background: linear-gradient(90deg, var(--navy), var(--title-b), #9fe0ff, var(--title-b), var(--navy));
+            background-size: 400px 100%;
+            animation: splash-bar 1.1s linear infinite;
+        }
+        @keyframes splash-bar { to { background-position: 400px 0; } }
+
+        .off {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 44px;
+            padding: 24px;
+            background: #000;
+            color: #ff9f2a;
+            text-align: center;
+            font: 22px/1.4 var(--pixel);
+        }
+        .power {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            font-size: 11px;
+            color: #9a9a9a;
+        }
+        .power-btn {
+            width: 72px;
+            height: 72px;
+            display: grid;
+            place-items: center;
+            border: 0;
+            background: #d4d0c8;
+            box-shadow: var(--raised);
+            cursor: pointer;
+        }
+        .power-btn:active { box-shadow: var(--sunken); }
+        .power-btn:focus-visible { outline: 1px dotted #fff; outline-offset: 4px; }
+        .power-btn svg { width: 36px; height: 36px; }
+
+        .boot-text {
+            position: absolute;
+            inset: 0;
+            padding: 16px;
+            background: #000;
+            color: var(--face);
+            font: 22px/1.4 var(--pixel);
+        }
+        .boot-text span { animation: blink 0.5s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .splash-bar, .boot-text span { animation: none; }
+        }
+
+        /* ---------- Phones (portrait, and landscape phones that are wide but short) ----------
+           Keep in sync with PHONE_MQ in the script. */
+        @media (max-width: 640px), (pointer: coarse) and (max-height: 500px) {
+            :root { --taskbar-h: 40px; }
+            body { font-size: 13px; }
+
+            .icons {
+                grid-auto-flow: row;
+                grid-template-rows: none;
+                grid-template-columns: repeat(auto-fill, 88px);
+                grid-auto-rows: 92px;
+                justify-content: space-evenly;
+                padding-top: 14px;
+            }
+            .desk-icon svg { width: 40px; height: 40px; }
+            .desk-icon .label { font-size: 13px; }
+
+            .window { resize: none; padding: 2px; }
+            .menu-bar { display: none; }
+            .title-bar { height: 32px; font-size: 14px; padding-left: 5px; }
+            .title-bar svg { width: 18px; height: 18px; }
+            .title-controls { gap: 4px; }
+            .title-controls button { width: 30px; height: 26px; }
+            .title-controls button:last-child { margin-left: 4px; }
+            .title-controls svg { width: 10px; height: 9px; }
+            .title-controls button[data-act="max"] { display: none; }
+
+            .win-body { padding: 14px 14px 20px; font-size: 14px; line-height: 1.6; }
+            .page h1 { font-size: 22px; }
+            .page h2 { font-size: 15px; }
+            .about-head svg { width: 40px; height: 40px; }
+            .props { grid-template-columns: 1fr; gap: 0; }
+            .props dd { margin-bottom: 10px; }
+            fieldset { padding: 12px 10px 10px; }
+            fieldset ul { margin-left: 16px; }
+            .stack span { font-size: 12px; padding: 3px 8px; }
+            legend, .props dt, .btn { font-size: 13px; }
+            .btn { flex: 1 1 0; padding: 10px 12px; }
+            .status-bar div { padding: 4px 6px; font-size: 12px; }
+            .status-bar div:last-child { display: none; }
+            .pc-only { display: none; }
+            .phone-only { display: inline; }
+
+            .start-btn, .task-btn, .tray { height: 32px; }
+            .start-btn { padding: 0 8px; font-size: 14px; }
+            .start-btn svg { width: 20px; height: 18px; }
+            .task-btn { flex-basis: 120px; font-size: 13px; padding: 0 6px; }
+            .task-btn svg { width: 18px; height: 18px; }
+            .tray { padding: 0 8px; font-size: 13px; }
+
+            .start-menu { min-width: 230px; }
+            .start-items a, .start-items button { padding: 10px 24px 10px 8px; font-size: 15px; }
+            .start-side { width: 28px; font-size: 19px; }
+
+            .dialog-body { font-size: 14px; }
+            .power { font-size: 13px; }
+        }
+
+        /* Very narrow phones: taskbar buttons show just their icon */
+        @media (max-width: 360px) {
+            .task-btn span { display: none; }
+            .task-btn { flex: 0 0 40px; justify-content: center; }
         }
     </style>
+    <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
-    <div class="grain-overlay"></div>
-    <div class="gutter gutter-left">Hardware Architecture — Silicon Verification — RTL Design</div>
-    <div class="gutter gutter-right">VJTI Mumbai — CADSL IIT Bombay — Class of 2028</div>
-
-    <div class="site-shell">
-        <header class="site-header">
-            <a href="#intro" class="wordmark">harshit bhalani</a>
-            <nav class="main-nav">
-                <a href="#intro">intro</a>
-                <a href="#experience">experience</a>
-                <a href="#projects">projects</a>
-                <a href="#contact">contact</a>
-            </nav>
-        </header>
-
-        <main class="lab-page">
-            <!-- INTRO -->
-            <section id="intro">
-                <p class="lab-kicker">lab log · september 2026</p>
-                <div class="intro-block">
-                    <p>I am <strong>Harshit Bhalani</strong>.</p>
-                </div>
-                <p class="intro-meta">
-                    <span>education</span> — B.Tech, Electronics &amp; Telecommunication (Minor in Data Science), VJTI Mumbai · 2024–2028 · CGPA 8.47/10<br>
-                    <span>working in</span> — Verilog, SystemVerilog, UVM, C/C++, Python, Vivado, Git<br>
-                    <span>away from waveforms</span> — anime, novels, and movies with systems worth getting lost in
-                </p>
-            </section>
-
-            <!-- EXPERIENCE -->
-            <section id="experience" class="log-section">
-                <h2>Experience</h2>
-                <p class="section-note">Where the work happened — roles and contributions.</p>
-                <div class="writing-list">
-                    <div class="writing-row">
-                        <span class="writing-type">research intern<br/>jun — jul 2026</span>
-                        <span>
-                            <strong>CADSL, IIT Bombay</strong>
-                            <small>Computer Architecture and Dependable Systems Lab — Mumbai, India</small>
-                            <ul>
-                                <li>Designed IITB-RISC-26, a custom 6-stage pipelined RISC CPU in RTL, with hazard forwarding/stalling and branch-flush logic distributed across the pipeline.</li>
-                                <li>Built a directed verification suite covering data hazards, load-use stalls, branch flushes, and multi-cycle memory operations across instruction sequences.</li>
-                            </ul>
-                            <div class="stack"><span>Verilog</span><span>RTL</span><span>Pipelining</span><span>Verification</span></div>
-                        </span>
-                    </div>
-                    <div class="writing-row">
-                        <span class="writing-type">open source<br/>2026</span>
-                        <span>
-                            <strong>Qubes OS — The Firewall Race</strong>
-                            <small>Contribution: a readiness signal fired before initialization finished.</small>
-                            <ul>
-                                <li>Traced and reported a start-up race in the Qubes OS firewall path, where the readiness signal arrived ahead of the rules being fully in place.</li>
-                            </ul>
-                            <div class="stack"><span>Linux</span><span>Python</span><span>Debugging</span></div>
-                        </span>
-                    </div>
-                    <div class="writing-row">
-                        <span class="writing-type">core member<br/>jul 2025 — present</span>
-                        <span>
-                            <strong>Society of Robotics &amp; Automation, VJTI</strong>
-                            <small>Third-year core team — Mumbai, India</small>
-                            <ul>
-                                <li>Ran hands-on workshops for 200+ students, from C programming to self-balancing robots and OpenCV-based computer vision.</li>
-                            </ul>
-                        </span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- PROJECTS -->
-            <section id="projects" class="log-section">
-                <h2>Projects</h2>
-                <p class="section-note">Short records from the workbench.</p>
-                <div class="writing-list">
-                    <div class="writing-row">
-                        <span class="writing-type">hardware verification<br/>jan — mar 2026</span>
-                        <span>
-                            <strong>Synapse32 — UVM Verification</strong>
-                            <small>Directed tests passed. The pipeline still had other ideas.</small>
-                            <ul>
-                                <li>UVM testbench in SystemVerilog for the Synapse32 RV32I pipelined processor: driver, monitor, sequencer, and scoreboard wired through a clocking-block virtual interface.</li>
-                                <li>The scoreboard's RV32I reference model runs directed tests across ALU ops and branch/pipeline-flush behavior, with coverage now pushing into CSR operations and interrupt handling.</li>
-                            </ul>
-                            <div class="stack"><span>SystemVerilog</span><span>UVM</span><span>RV32I</span><span>Functional coverage</span></div>
-                        </span>
-                    </div>
-                    <div class="writing-row">
-                        <span class="writing-type">hardware design<br/>jul — sep 2025</span>
-                        <span>
-                            <strong>FPGA Video Pipeline &amp; Graphics System</strong>
-                            <small>A whole game rendered by timing counters and logic.</small>
-                            <ul>
-                                <li>VGA graphics pipeline in Verilog on a Xilinx Artix-7 (Arty A7-35T), generating standard 640×480 @ 60 Hz timing from scratch.</li>
-                                <li>Drove a fully playable Tetris on it — clean and artifact-free in both simulation and on-hardware testing.</li>
-                            </ul>
-                            <div class="stack"><span>Verilog</span><span>Artix-7</span><span>Vivado</span><span>VGA timing</span></div>
-                        </span>
-                    </div>
-                    <div class="writing-row">
-                        <span class="writing-type">research / embedded<br/>dec 2025</span>
-                        <span>
-                            <strong>Anti-Drone System — SIH 2025 Finalist</strong>
-                            <small>RF sensing and signal analysis, for an ITBP problem statement.</small>
-                            <ul>
-                                <li>Reached the Grand Finale of Smart India Hackathon 2025 on an Indo-Tibetan Border Police anti-drone problem statement.</li>
-                                <li>Used a Software-Defined Radio to capture and record RF signals, contributing to the acquisition and analysis pipeline for drone detection.</li>
-                                <li>Built a proof-of-concept GPS spoofing demonstration over ESP-NOW in a controlled experimental setup.</li>
-                            </ul>
-                            <div class="stack"><span>SDR</span><span>GNU Radio</span><span>ESP-NOW</span><span>Python</span></div>
-                        </span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- CONTACT -->
-            <section id="contact" class="log-section">
-                <div>
-                    <h2>Contact</h2>
-                    <p class="section-note">Places where I might be alive enough to respond.</p>
-                    <div class="inline-links">
-                        <a href="mailto:harshitbhalani6@gmail.com">email</a>
-                        <a href="https://github.com/Harshit6-b" target="_blank" rel="noopener">github</a>
-                        <a href="https://linkedin.com/in/harshit-bhalani" target="_blank" rel="noopener">linkedin</a>
-                    </div>
-                    <a href="mailto:harshitbhalani6@gmail.com" class="button">Email Harshit ↗</a>
-                </div>
-            </section>
-
-            <p class="signature">— HB</p>
-        </main>
-
-        <footer class="site-footer">
-            <span>© 2026 / Mumbai, India</span>
-            <span>field notes / version 05</span>
-            <a href="mailto:harshitbhalani6@gmail.com">email ↗</a>
-        </footer>
+    <div class="desktop" id="desktop">
+        <div class="icons" id="icons"></div>
     </div>
 
+    <!-- ===================== PAGE CONTENT ===================== -->
+    <!-- Each section is moved into a window when its icon is opened. -->
+    <div id="pages">
+
+        <section class="page" id="page-about">
+            <div class="about-head">
+                <svg data-icon="computer"></svg>
+                <div>
+                    <h1>Harshit Bhalani</h1>
+                    <div class="sub">Hardware architecture · RTL design · Silicon verification</div>
+                </div>
+            </div>
+            <p>Welcome to Harshit 95. Open the icons on the desktop to see each page, or use the <b>Start</b> menu.</p>
+            <dl class="props">
+                <dt>Education</dt>
+                <dd>B.Tech, Electronics &amp; Telecommunication (Minor in Data Science), VJTI Mumbai · 2024–2028 · CGPA 8.47/10</dd>
+                <dt>Working in</dt>
+                <dd>Verilog, SystemVerilog, UVM, C/C++, Python, Vivado, Git</dd>
+                <dt>Location</dt>
+                <dd>Mumbai, India</dd>
+            </dl>
+        </section>
+
+        <section class="page" id="page-experience">
+            <h1>Experience</h1>
+
+            <fieldset>
+                <legend>Research Intern · Jun — Jul 2026</legend>
+                <h2>CADSL, IIT Bombay</h2>
+                <div class="sub">Computer Architecture and Dependable Systems Lab — Mumbai, India</div>
+                <ul>
+                    <li>Designed IITB-RISC-26, a custom 6-stage pipelined RISC CPU in RTL, with hazard forwarding/stalling and branch-flush logic distributed across the pipeline.</li>
+                    <li>Built a directed verification suite covering data hazards, load-use stalls, branch flushes, and multi-cycle memory operations across instruction sequences.</li>
+                </ul>
+                <div class="stack"><span>Verilog</span><span>RTL</span><span>Pipelining</span><span>Verification</span></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Core Member · Jul 2025 — Present</legend>
+                <h2>Society of Robotics &amp; Automation, VJTI</h2>
+                <div class="sub">Third-year core team — Mumbai, India</div>
+                <ul>
+                    <li>Ran hands-on workshops for 200+ students, from C programming to self-balancing robots and OpenCV-based computer vision.</li>
+                </ul>
+            </fieldset>
+        </section>
+
+        <section class="page" id="page-projects">
+            <h1>Projects</h1>
+
+            <fieldset>
+                <legend>Hardware Verification · Jan — Mar 2026</legend>
+                <h2>Synapse32 — UVM Verification</h2>
+                <ul>
+                    <li>UVM testbench in SystemVerilog for the Synapse32 RV32I pipelined processor: driver, monitor, sequencer, and scoreboard wired through a clocking-block virtual interface.</li>
+                    <li>The scoreboard's RV32I reference model runs directed tests across ALU ops and branch/pipeline-flush behavior, with coverage now pushing into CSR operations and interrupt handling.</li>
+                </ul>
+                <div class="stack"><span>SystemVerilog</span><span>UVM</span><span>RV32I</span><span>Functional coverage</span></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Hardware Design · Jul — Sep 2025</legend>
+                <h2>FPGA Video Pipeline &amp; Graphics System</h2>
+                <ul>
+                    <li>VGA graphics pipeline in Verilog on a Xilinx Artix-7 (Arty A7-35T), generating standard 640×480 @ 60 Hz timing from scratch.</li>
+                    <li>Drove a fully playable Tetris on it — clean and artifact-free in both simulation and on-hardware testing.</li>
+                </ul>
+                <div class="stack"><span>Verilog</span><span>Artix-7</span><span>Vivado</span><span>VGA timing</span></div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Research / Embedded · Dec 2025</legend>
+                <h2>Anti-Drone System — SIH 2025 Finalist</h2>
+                <div class="sub">RF sensing and signal analysis, for an ITBP problem statement.</div>
+                <ul>
+                    <li>Reached the Grand Finale of Smart India Hackathon 2025 on an Indo-Tibetan Border Police anti-drone problem statement.</li>
+                    <li>Used a Software-Defined Radio to capture and record RF signals, contributing to the acquisition and analysis pipeline for drone detection.</li>
+                    <li>Built a proof-of-concept GPS spoofing demonstration over ESP-NOW in a controlled experimental setup.</li>
+                </ul>
+                <div class="stack"><span>SDR</span><span>GNU Radio</span><span>ESP-NOW</span><span>Python</span></div>
+            </fieldset>
+        </section>
+
+        <section class="page" id="page-contact">
+            <div class="contact-head">
+                <svg data-icon="mail"></svg>
+                <div>
+                    <h1>Contact</h1>
+                    <p>Email: <a href="mailto:harshitbhalani6@gmail.com">harshitbhalani6@gmail.com</a></p>
+                </div>
+            </div>
+            <div class="btn-row">
+                <a class="btn" href="mailto:harshitbhalani6@gmail.com">Email</a>
+                <a class="btn" href="https://github.com/Harshit6-b" target="_blank" rel="noopener">GitHub</a>
+                <a class="btn" href="https://linkedin.com/in/harshit-bhalani" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+        </section>
+
+        <section class="page" id="page-recycle">
+            <p><b>1 object</b></p>
+            <p class="file-row"><svg data-icon="folder"></svg>old-portfolio-site</p>
+        </section>
+    </div>
+
+    <!-- ===================== START MENU ===================== -->
+    <div class="start-menu" id="start-menu" role="menu">
+        <div class="start-side"><b>Harshit</b><span>95</span></div>
+        <ul class="start-items" id="start-items"></ul>
+    </div>
+
+    <!-- ===================== TASKBAR ===================== -->
+    <div class="taskbar">
+        <button class="start-btn" id="start-btn" aria-haspopup="menu" aria-expanded="false">
+            <svg viewBox="0 0 18 16" shape-rendering="crispEdges">
+                <rect x="1" y="1" width="7" height="6" fill="#ff0000"/>
+                <rect x="9" y="1" width="7" height="6" fill="#00a800"/>
+                <rect x="1" y="8" width="7" height="6" fill="#0000ff"/>
+                <rect x="9" y="8" width="7" height="6" fill="#ffd800"/>
+            </svg>
+            Start
+        </button>
+        <div class="tasks" id="tasks"></div>
+        <div class="tray" id="clock"></div>
+    </div>
+
+    <div class="dither" id="shutdown-dialog">
+        <div class="window dialog active" role="dialog" aria-modal="true" aria-labelledby="sd-title">
+            <div class="title-bar">
+                <span class="title-text" id="sd-title">Shut Down Harshit 95</span>
+                <div class="title-controls"><button data-sd="no" aria-label="Close" id="sd-close"></button></div>
+            </div>
+            <div class="dialog-body">
+                <svg data-icon="shutdown"></svg>
+                <div>
+                    <p>Are you sure you want to:</p>
+                    <label><input type="radio" name="sd" value="off" checked><span><u>S</u>hut down the computer?</span></label>
+                    <label><input type="radio" name="sd" value="restart"><span><u>R</u>estart the computer?</span></label>
+                </div>
+            </div>
+            <div class="dialog-btns">
+                <button class="btn" data-sd="yes"><u>Y</u>es</button>
+                <button class="btn" data-sd="no"><u>N</u>o</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="screen" aria-live="polite"></div>
+
     <script>
-        // Highlight the nav entry for the section currently in view.
-        const links = [...document.querySelectorAll('.main-nav a')];
-        const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+        // ---------- Pixel icons (32×32, crisp) ----------
+        const ICONS = {
+            computer: `
+                <rect x="4" y="2" width="24" height="19" fill="#000"/><rect x="5" y="3" width="22" height="17" fill="#c0c0c0"/>
+                <rect x="7" y="5" width="18" height="12" fill="#808080"/><rect x="8" y="6" width="16" height="10" fill="#008080"/>
+                <rect x="9" y="7" width="6" height="1" fill="#7fffff"/>
+                <rect x="12" y="21" width="8" height="3" fill="#000"/><rect x="13" y="21" width="6" height="2" fill="#808080"/>
+                <rect x="5" y="24" width="22" height="6" fill="#000"/><rect x="6" y="25" width="20" height="4" fill="#c0c0c0"/>
+                <rect x="20" y="26" width="4" height="1" fill="#00a800"/>`,
+            briefcase: `
+                <rect x="11" y="4" width="10" height="6" fill="#000"/><rect x="13" y="6" width="6" height="4" fill="#008080"/>
+                <rect x="2" y="9" width="28" height="20" fill="#000"/><rect x="3" y="10" width="26" height="18" fill="#a0632b"/>
+                <rect x="3" y="10" width="26" height="2" fill="#c98a4b"/><rect x="3" y="18" width="26" height="2" fill="#5c3412"/>
+                <rect x="14" y="16" width="4" height="5" fill="#000"/><rect x="15" y="17" width="2" height="3" fill="#ffd800"/>`,
+            folder: `
+                <rect x="2" y="6" width="12" height="4" fill="#000"/><rect x="3" y="7" width="10" height="3" fill="#ffe680"/>
+                <rect x="2" y="9" width="28" height="19" fill="#000"/><rect x="3" y="10" width="26" height="17" fill="#ffd34d"/>
+                <rect x="3" y="10" width="26" height="1" fill="#fff3b0"/><rect x="3" y="13" width="26" height="1" fill="#c79a1a"/>
+                <rect x="3" y="26" width="26" height="1" fill="#c79a1a"/>`,
+            mail: `
+                <rect x="2" y="7" width="28" height="19" fill="#000"/><rect x="3" y="8" width="26" height="17" fill="#fff"/>
+                <polyline points="3.5,8.5 16,18 28.5,8.5" fill="none" stroke="#000" stroke-width="1.2"/>
+                <rect x="3" y="24" width="26" height="1" fill="#c0c0c0"/>
+                <rect x="22" y="10" width="5" height="5" fill="#ff0000"/>`,
+            recycle: `
+                <rect x="13" y="3" width="6" height="2" fill="#000"/>
+                <rect x="6" y="5" width="20" height="4" fill="#000"/><rect x="7" y="6" width="18" height="2" fill="#dfdfdf"/>
+                <rect x="8" y="9" width="16" height="20" fill="#000"/><rect x="9" y="10" width="14" height="18" fill="#c0c0c0"/>
+                <rect x="12" y="11" width="1" height="15" fill="#808080"/><rect x="16" y="11" width="1" height="15" fill="#808080"/>
+                <rect x="20" y="11" width="1" height="15" fill="#808080"/>`,
+            shutdown: `
+                <rect x="4" y="6" width="24" height="18" fill="#000"/><rect x="5" y="7" width="22" height="16" fill="#c0c0c0"/>
+                <rect x="7" y="9" width="18" height="12" fill="#000080"/>
+                <rect x="10" y="24" width="12" height="4" fill="#000"/><rect x="11" y="25" width="10" height="2" fill="#808080"/>`
+        };
 
-        const spy = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (!e.isIntersecting) return;
-                links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+        // 16×16 pixel art, drawn at 2× so each pixel is a crisp 2×2 block.
+        const pix = (rows, pal) => rows.map((row, y) => [...row].map((c, x) =>
+            pal[c] ? `<rect x="${x * 2}" y="${y * 2}" width="2" height="2" fill="${pal[c]}"/>` : '').join('')).join('');
+
+        ICONS.github = pix([
+            '................',
+            '.....######.....',
+            '...##########...',
+            '..##w######w##..',
+            '.###ww####ww###.',
+            '.###wwwwwwww###.',
+            '###wwwwwwwwww###',
+            '###wwwwwwwwww###',
+            '###wwwwwwwwww###',
+            '###wwwwwwwwww###',
+            '.###wwwwwwww###.',
+            '.#w###wwww#####.',
+            '..#ww#wwww####..',
+            '...###wwww###...',
+            '.....#wwww#.....',
+            '......####......'
+        ], { '#': '#000', w: '#fff' });
+
+        ICONS.linkedin = pix([
+            '................',
+            '.dddddddddddddd.',
+            '.dbbbbbbbbbbbbd.',
+            '.dbwwbbbbbbbbbd.',
+            '.dbwwbbbbbbbbbd.',
+            '.dbbbbbbbbbbbbd.',
+            '.dbwwbwwbwwwbbd.',
+            '.dbwwbwwwwwwwbd.',
+            '.dbwwbwwwbbwwbd.',
+            '.dbwwbwwbbbwwbd.',
+            '.dbwwbwwbbbwwbd.',
+            '.dbwwbwwbbbwwbd.',
+            '.dbwwbwwbbbwwbd.',
+            '.dbbbbbbbbbbbbd.',
+            '.dddddddddddddd.',
+            '................'
+        ], { d: '#000', b: '#0a66c2', w: '#fff' });
+
+        ICONS.power = `<path d="M10.5 9.5a9 9 0 1 0 11 0" fill="none" stroke="#000" stroke-width="3"/><rect x="14.5" y="4" width="3" height="12"/>`;
+
+        const svg = (name, extra = '') =>
+            `<svg viewBox="0 0 32 32" shape-rendering="crispEdges" aria-hidden="true" ${extra}>${ICONS[name]}</svg>`;
+
+        document.querySelectorAll('svg[data-icon]').forEach(el => {
+            el.setAttribute('viewBox', '0 0 32 32');
+            el.setAttribute('shape-rendering', 'crispEdges');
+            el.innerHTML = ICONS[el.dataset.icon];
+        });
+
+        // ---------- Pages shown as desktop icons ----------
+        const APPS = {
+            about:      { label: 'About Me',    title: 'My Computer — About Me', icon: 'computer',  w: 540, h: 400, status: 'Harshit Bhalani' },
+            experience: { label: 'Experience',  title: 'Experience',             icon: 'briefcase', w: 620, h: 480, status: '2 object(s)' },
+            projects:   { label: 'Projects',    title: 'C:\\Projects',           icon: 'folder',    w: 640, h: 500, status: '3 object(s)' },
+            contact:    { label: 'Contact',     title: 'Contact — Inbox',        icon: 'mail',      w: 440, h: 260, status: 'Ready' },
+            recycle:    { label: 'Recycle Bin', title: 'Recycle Bin',            icon: 'recycle',   w: 380, h: 220, status: '1 object(s)' }
+        };
+
+        const desktop = document.getElementById('desktop');
+        const iconsEl = document.getElementById('icons');
+        const tasksEl = document.getElementById('tasks');
+        const startBtn = document.getElementById('start-btn');
+        const startMenu = document.getElementById('start-menu');
+        // Same query as the phone @media block in the CSS.
+        const PHONE_MQ = '(max-width: 640px), (pointer: coarse) and (max-height: 500px)';
+        const isPhone = () => window.matchMedia(PHONE_MQ).matches;
+        const coarse = window.matchMedia('(pointer: coarse)').matches;
+
+        // ---------- Desktop icons ----------
+        Object.entries(APPS).forEach(([id, app]) => {
+            const b = document.createElement('button');
+            b.className = 'desk-icon';
+            b.innerHTML = `${svg(app.icon)}<span class="label">${app.label}</span>`;
+            b.addEventListener('click', e => {
+                e.stopPropagation();
+                selectIcon(b);
+                if (coarse) openWin(id);   // single tap on touch screens
             });
-        }, { rootMargin: '-45% 0px -50% 0px' });
+            b.addEventListener('dblclick', () => openWin(id));
+            b.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); openWin(id); } });
+            iconsEl.appendChild(b);
+        });
 
-        sections.forEach(s => s && spy.observe(s));
+        // A centred label with an odd pixel width sits on a half pixel and the
+        // pixel font smears. Round each label up to an even width.
+        function evenLabels() {
+            iconsEl.querySelectorAll('.label').forEach(l => {
+                l.style.width = '';
+                const w = Math.ceil(l.getBoundingClientRect().width);
+                l.style.width = (w + (w % 2)) + 'px';
+            });
+        }
+        evenLabels();
+        document.fonts?.ready.then(evenLabels);
+
+        function selectIcon(b) {
+            iconsEl.querySelectorAll('.selected').forEach(x => x.classList.remove('selected'));
+            if (b) b.classList.add('selected');
+        }
+
+        desktop.addEventListener('pointerdown', e => {
+            if (e.target === desktop || e.target === iconsEl) selectIcon(null);
+        });
+
+        // ---------- Windows ----------
+        const wins = {};
+        let z = 10, cascade = 0;
+
+        const CTRL = {
+            min:   '<svg viewBox="0 0 8 7" shape-rendering="crispEdges"><rect x="1" y="5" width="6" height="2"/></svg>',
+            max:   '<svg viewBox="0 0 8 7" shape-rendering="crispEdges"><path d="M0 0h8v7H0zM1 2v4h6V2z" fill-rule="evenodd"/></svg>',
+            close: '<svg viewBox="0 0 8 7" shape-rendering="crispEdges"><path d="M0 0h2v1h1v1h2V1h1V0h2v1H7v1H6v1H5v1h1v1h1v1h1v1H6V6H5V5H3v1H2v1H0V6h1V5h1V4h1V3H2V2H1V1H0z"/></svg>'
+        };
+
+        function openWin(id) {
+            closeStart();
+            // On phones each window is its own "screen", so give it a history
+            // entry: the browser Back button then returns to the desktop.
+            if (isPhone() && history.state?.w !== id) history.pushState({ w: id }, '', urlFor(id));
+            if (wins[id]) {
+                wins[id].el.classList.remove('minimized');
+                focusWin(id);
+                return;
+            }
+            const app = APPS[id];
+            const el = document.createElement('div');
+            el.className = 'window';
+            el.setAttribute('role', 'dialog');
+            el.setAttribute('aria-label', app.title);
+            el.innerHTML = `
+                <div class="title-bar">
+                    ${svg(app.icon)}
+                    <span class="title-text">${app.title}</span>
+                    <div class="title-controls">
+                        <button data-act="min" aria-label="Minimize">${CTRL.min}</button>
+                        <button data-act="max" aria-label="Maximize">${CTRL.max}</button>
+                        <button data-act="close" aria-label="Close">${CTRL.close}</button>
+                    </div>
+                </div>
+                <div class="menu-bar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>H</u>elp</span></div>
+                <div class="win-body"></div>
+                <div class="status-bar"><div><span class="pc-only">${app.status}</span><span class="phone-only">Tap ✕ to go back to the desktop</span></div><div></div></div>`;
+
+            el.querySelector('.win-body').appendChild(document.getElementById('page-' + id));
+
+            // Size and cascade position, kept inside the desktop.
+            const dw = desktop.clientWidth, dh = desktop.clientHeight;
+            const w = Math.min(app.w, dw - 16), h = Math.min(app.h, dh - 16);
+            const offset = (cascade++ % 6) * 26;
+            el.style.width = w + 'px';
+            el.style.height = h + 'px';
+            el.style.left = Math.max(8, Math.min(110 + offset, dw - w - 8)) + 'px';
+            el.style.top = Math.max(8, Math.min(20 + offset, dh - h - 8)) + 'px';
+            if (isPhone()) { el.classList.add('maximized'); el.dataset.autoMax = '1'; }
+
+            el.addEventListener('pointerdown', () => focusWin(id));
+            el.querySelector('[data-act=min]').addEventListener('click', e => { e.stopPropagation(); minimizeWin(id); });
+            el.querySelector('[data-act=max]').addEventListener('click', e => { e.stopPropagation(); el.classList.toggle('maximized'); delete el.dataset.autoMax; });
+            el.querySelector('[data-act=close]').addEventListener('click', e => { e.stopPropagation(); closeWin(id); });
+            el.querySelector('.title-bar').addEventListener('dblclick', e => {
+                if (!e.target.closest('button') && !isPhone()) { el.classList.toggle('maximized'); delete el.dataset.autoMax; }
+            });
+            makeDraggable(el);
+
+            const task = document.createElement('button');
+            task.className = 'task-btn';
+            task.innerHTML = `${svg(app.icon)}<span>${app.label}</span>`;
+            task.addEventListener('click', () => {
+                const w = wins[id];
+                if (w.el.classList.contains('active') && !w.el.classList.contains('minimized')) minimizeWin(id);
+                else openWin(id);
+            });
+            tasksEl.appendChild(task);
+
+            desktop.appendChild(el);
+            wins[id] = { el, task };
+            focusWin(id);
+            if (isPhone()) showBalloon(el);
+        }
+
+        // On phones a window covers the desktop, so the first one opened in a
+        // visit points out the close button. Any tap dismisses it.
+        let balloonShown = false;
+        function showBalloon(el) {
+            if (balloonShown) return;
+            balloonShown = true;
+            const b = document.createElement('div');
+            b.className = 'balloon';
+            b.setAttribute('role', 'status');
+            b.textContent = 'Tap ✕ to close this page and see the other icons on the desktop.';
+            el.appendChild(b);
+            const dismiss = () => { b.remove(); document.removeEventListener('pointerdown', dismiss, true); };
+            document.addEventListener('pointerdown', dismiss, true);
+        }
+
+        function focusWin(id) {
+            Object.entries(wins).forEach(([k, w]) => {
+                const on = k === id;
+                w.el.classList.toggle('active', on);
+                w.task.classList.toggle('active', on);
+            });
+            wins[id].el.style.zIndex = ++z;
+            history.replaceState({ w: id }, '', urlFor(id));
+        }
+
+        // About is the home window, so it keeps the bare URL. Otherwise a link
+        // copied on a computer would open About full screen on a phone.
+        function urlFor(id) {
+            return id === 'about' ? location.pathname + location.search : '#' + id;
+        }
+
+        function minimizeWin(id) {
+            const w = wins[id];
+            w.el.classList.add('minimized');
+            w.el.classList.remove('active');
+            w.task.classList.remove('active');
+            leaveWin(id);
+        }
+
+        // quiet: skip history handling (used when closing everything at once).
+        function closeWin(id, quiet) {
+            const w = wins[id];
+            // Return the page content to its hidden home so it can be reopened.
+            document.getElementById('pages').appendChild(w.el.querySelector('.page'));
+            w.el.remove();
+            w.task.remove();
+            delete wins[id];
+            if (!quiet) leaveWin(id);
+        }
+
+        // After a window is minimized or closed: on phones, step back out of its
+        // history entry; elsewhere, focus whatever window is on top.
+        function leaveWin(id) {
+            if (isPhone() && history.state?.w === id) history.back();
+            else focusTopmost();
+        }
+
+        function focusTopmost() {
+            const open = Object.entries(wins).filter(([, w]) => !w.el.classList.contains('minimized'));
+            if (!open.length) { history.replaceState(null, '', location.pathname + location.search); return; }
+            open.sort((a, b) => b[1].el.style.zIndex - a[1].el.style.zIndex);
+            focusWin(open[0][0]);
+        }
+
+        function makeDraggable(el) {
+            const bar = el.querySelector('.title-bar');
+            let sx, sy, ox, oy, dragging = false;
+            bar.addEventListener('pointerdown', e => {
+                if (e.target.closest('button') || el.classList.contains('maximized') || isPhone()) return;
+                dragging = true;
+                sx = e.clientX; sy = e.clientY;
+                ox = el.offsetLeft; oy = el.offsetTop;
+                bar.setPointerCapture(e.pointerId);
+            });
+            bar.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                const maxX = desktop.clientWidth - 60, maxY = desktop.clientHeight - 20;
+                el.style.left = Math.max(60 - el.offsetWidth, Math.min(maxX, ox + e.clientX - sx)) + 'px';
+                el.style.top = Math.max(0, Math.min(maxY, oy + e.clientY - sy)) + 'px';
+            });
+            const stop = () => { dragging = false; };
+            bar.addEventListener('pointerup', stop);
+            bar.addEventListener('pointercancel', stop);
+        }
+
+        // ---------- Start menu ----------
+        const startItems = document.getElementById('start-items');
+        const menuHTML = Object.entries(APPS)
+            .filter(([id]) => id !== 'recycle')
+            .map(([id, app]) => `<li><button data-open="${id}">${svg(app.icon)}<span>${app.label}</span></button></li>`)
+            .join('') + `
+            <li class="sep"></li>
+            <li><a href="https://github.com/Harshit6-b" target="_blank" rel="noopener">${svg('github')}<span>GitHub</span></a></li>
+            <li><a href="https://linkedin.com/in/harshit-bhalani" target="_blank" rel="noopener">${svg('linkedin')}<span>LinkedIn</span></a></li>
+            <li class="sep"></li>
+            <li><button data-shutdown>${svg('shutdown')}<span>Sh<u>u</u>t Down...</span></button></li>`;
+        startItems.innerHTML = menuHTML;
+
+        startItems.addEventListener('click', e => {
+            const open = e.target.closest('[data-open]');
+            if (open) openWin(open.dataset.open);
+            if (e.target.closest('[data-shutdown]')) openShutdown();
+            if (e.target.closest('a')) closeStart();
+        });
+
+        function closeStart() {
+            startMenu.classList.remove('open');
+            startBtn.classList.remove('pressed');
+            startBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        startBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            const open = !startMenu.classList.contains('open');
+            startMenu.classList.toggle('open', open);
+            startBtn.classList.toggle('pressed', open);
+            startBtn.setAttribute('aria-expanded', String(open));
+        });
+        document.addEventListener('pointerdown', e => {
+            if (!startMenu.contains(e.target) && !startBtn.contains(e.target)) closeStart();
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStart(); });
+
+        // ---------- Shut down / restart ----------
+        const dither = document.getElementById('shutdown-dialog');
+        const screen = document.getElementById('screen');
+        document.getElementById('sd-close').innerHTML = CTRL.close;
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+
+        function openShutdown() {
+            closeStart();
+            dither.classList.add('on');
+            dither.querySelector('.btn[data-sd="yes"]').focus();
+        }
+
+        function closeShutdown() {
+            dither.classList.remove('on');
+            startBtn.focus();
+        }
+
+        dither.addEventListener('click', e => {
+            const b = e.target.closest('[data-sd]');
+            if (!b) return;
+            if (b.dataset.sd === 'no') return closeShutdown();
+            dither.classList.remove('on');
+            powerOff(dither.querySelector('input[name="sd"]:checked').value === 'restart');
+        });
+
+        dither.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeShutdown();
+            if (e.target.matches('input')) return;
+            const k = e.key.toLowerCase();
+            if (k === 's' || k === 'r') dither.querySelector(`input[value="${k === 's' ? 'off' : 'restart'}"]`).checked = true;
+            if (k === 'y') dither.querySelector('.btn[data-sd="yes"]').click();
+            if (k === 'n') closeShutdown();
+        });
+
+        const splash = msg => `
+            <div class="splash">
+                <div class="splash-logo">
+                    <svg viewBox="0 0 18 16" shape-rendering="crispEdges" aria-hidden="true">
+                        <rect x="1" y="1" width="7" height="6" fill="#ff0000"/><rect x="9" y="1" width="7" height="6" fill="#00a800"/>
+                        <rect x="1" y="8" width="7" height="6" fill="#0000ff"/><rect x="9" y="8" width="7" height="6" fill="#ffd800"/>
+                    </svg>
+                    <div class="splash-name">Harshit<span>95</span></div>
+                </div>
+                <p class="splash-msg">${msg}</p>
+                <div class="splash-bar"></div>
+            </div>`;
+
+        async function powerOff(restart) {
+            screen.innerHTML = splash('Please wait while your computer shuts down.');
+            screen.classList.add('on');
+            Object.keys(wins).forEach(id => closeWin(id, true));
+            history.replaceState(null, '', location.pathname + location.search);
+            await wait(1800);
+            if (restart) return boot();
+            screen.innerHTML = `
+                <div class="off">
+                    <p>It's now safe to turn off<br>your computer.</p>
+                    <div class="power">
+                        <button class="power-btn" aria-label="Turn the computer on">${svg('power')}</button>
+                        Press the power button to turn it back on
+                    </div>
+                </div>`;
+            const btn = screen.querySelector('.power-btn');
+            btn.addEventListener('click', boot, { once: true });
+            btn.focus();
+        }
+
+        async function boot() {
+            screen.innerHTML = '<div class="boot-text">Starting Harshit 95...<span>_</span></div>';
+            await wait(900);
+            screen.innerHTML = splash('');
+            await wait(1800);
+            screen.classList.remove('on');
+            screen.innerHTML = '';
+            if (!isPhone()) openWin('about');
+        }
+
+        // ---------- Phone Back button ----------
+        // Show the window the history entry points at; anything else is minimized.
+        window.addEventListener('popstate', () => {
+            if (!isPhone()) return;
+            const target = history.state?.w;
+            Object.entries(wins).forEach(([k, w]) => {
+                if (k === target) return;
+                w.el.classList.add('minimized');
+                w.el.classList.remove('active');
+                w.task.classList.remove('active');
+            });
+            if (target && wins[target]) {
+                wins[target].el.classList.remove('minimized');
+                focusWin(target);
+            } else {
+                history.replaceState(null, '', location.pathname + location.search);
+            }
+        });
+
+        // ---------- Rotation / resize ----------
+        // Phones: every window fills the screen. Larger screens: undo that and
+        // keep each window's title bar reachable.
+        window.addEventListener('resize', () => {
+            evenLabels();
+            const phone = isPhone();
+            const dw = desktop.clientWidth, dh = desktop.clientHeight;
+            Object.values(wins).forEach(({ el }) => {
+                if (phone && !el.classList.contains('maximized')) {
+                    el.classList.add('maximized');
+                    el.dataset.autoMax = '1';
+                } else if (!phone && el.dataset.autoMax) {
+                    el.classList.remove('maximized');
+                    delete el.dataset.autoMax;
+                }
+                if (phone) return;
+                el.style.width = Math.min(el.offsetWidth, dw) + 'px';
+                el.style.height = Math.min(el.offsetHeight, dh) + 'px';
+                el.style.left = Math.max(0, Math.min(el.offsetLeft, dw - 60)) + 'px';
+                el.style.top = Math.max(0, Math.min(el.offsetTop, dh - 20)) + 'px';
+            });
+        });
+
+        // ---------- Clock ----------
+        const clock = document.getElementById('clock');
+        const tick = () => {
+            clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        };
+        tick();
+        setInterval(tick, 10000);
+
+        // ---------- Boot: open the page from the URL hash, or About ----------
+        // Phones show the desktop first, since any window there fills the screen.
+        // A reload keeps the old history state; clear it so Back can't leave the site.
+        history.replaceState(null, '', location.href);
+        const start = location.hash.slice(1);
+        if (APPS[start]) openWin(start);
+        else if (!isPhone()) openWin('about');
     </script>
 </body>
 </html>
